@@ -89,7 +89,7 @@ Here's what you should not be able to do:
   3. Create an exercise event for a duration that does not exist
   4. Create an exercise event for an intensity that does not exist
   5. Allow users to edit an exercise from more than a week ago
-  6. Allow users to delete a user (an administrator password is needed)
+  6. Allow more than one date-exercise type-user combination in the exercise event table.
 
 ##Stretches
 
