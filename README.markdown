@@ -1,18 +1,37 @@
-Person                        Exercise Types                   Intensity                  Duration                    Rule
-id                            id                               id                         id                          id
-name                          name                             intensity level            time                        num_points_needed
-                              point_base                       point_adjustment           num_quarter_hours           within_time_frame
+| Person Table  | Description
+| ------------- |                                        
+| id            |  Integer PRIMARY KEY                                        
+| name          |  Text
+
+Exercise Types | Description
+-------------- | ------------
+id             | Integer PRIMARY KEY
+name           | Text
+`point_base`   | Integer
 
 
+Intensity           | Description
+------------------  | ----------------
+id                  | Integer PRIMARY KEY
+`name`              | Text
+`point_adjustment`  | Integer                     
 
-Exercise Event
-date  person    exercise    intensity   duration    points
+Duration            | Description
+------------------- | ------------------
+id                  | Integer PRIMARY KEY
+name                | Text
+`num_quarter_hours` | Integer
 
 
-Achievement
-Person      Rule      Passed
-
-
+Exercise Event      | Description
+------------------- | -------------------
+id                  | Integer PRIMARY KEY
+`user_id`           | Integer FOREIGN KEY NOT NULL
+`exercise_type`     | Integer FOREIGN KEY NOT NULL
+date                | Integer NOT NULL
+intensity           | Integer FOREIGN KEY NOT NULL
+duration            | Integer FOREIGN KEY NOT NULL
+points              | Integer DEFAULT 0
 
 
 #Wellness Tracker
