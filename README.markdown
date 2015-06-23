@@ -1,7 +1,8 @@
-| Person Table  | Description
-| ------------- |                                        
-| id            |  Integer PRIMARY KEY                                        
-| name          |  Text
+Person Table  | Description
+------------- | ---------------------------                                        
+id            |  Integer PRIMARY KEY                                        
+name          |  Text
+
 
 Exercise Types | Description
 -------------- | ------------
@@ -15,6 +16,7 @@ Intensity           | Description
 id                  | Integer PRIMARY KEY
 `name`              | Text
 `point_adjustment`  | Integer                     
+
 
 Duration            | Description
 ------------------- | ------------------
