@@ -14,7 +14,7 @@ name           | Text
 Intensity           | Description
 ------------------  | ----------------
 id                  | Integer PRIMARY KEY
-`name`              | Text
+name              | Text
 `point_adjustment`  | Integer                     
 
 
@@ -34,6 +34,8 @@ date                | Integer NOT NULL
 intensity           | Integer FOREIGN KEY NOT NULL
 duration            | Integer FOREIGN KEY NOT NULL
 points              | Integer DEFAULT 0
+
+Within the Exercise Event table, the combination of `user_id`, `exercise_type` and date should be unique.
 
 
 #Wellness Tracker
