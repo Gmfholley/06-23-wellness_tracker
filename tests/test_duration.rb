@@ -51,12 +51,12 @@ class DurationTest < Minitest::Test
     p.valid?
     assert_equal(1, p.errors.length)
     
-    # can't be empty strings
+    # num_quarter_hours can't be 0
     p = Duration.new(name: "s", num_quarter_hours: 0)    
     p.valid?
     assert_equal(1, p.errors.length)
     
-    # can't be empty strings
+    # should work here
     p = Duration.new(name: "s", num_quarter_hours: 1)    
     p.valid?
     assert_equal(0, p.errors.length)

@@ -10,7 +10,7 @@ class Duration
   attr_accessor :name, :num_quarter_hours
   
   
-  # initializes a Rating id
+  # initializes a Duration id
   #
   # optional Hash argument
   #         name              - String of the rating
