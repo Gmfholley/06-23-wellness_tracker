@@ -50,7 +50,7 @@ module DatabaseConnector
       field_names_and_types.join(" ")
     end
   
-    ####### NOTE: THIS METHOD DOE SNOT WORK BECAUSE YOU CANNOT GET THE FIELDNAMES
+    ####### NOTE: THIS METHOD DOES NOT WORK BECAUSE YOU CANNOT GET THE FIELDNAMES
     # # creates a new record in the table
     # #
     # # records                 - multi-dimensional Array of column names, each row representing a new record
@@ -106,10 +106,9 @@ module DatabaseConnector
       end
     end
     
-    
     # retrieves a record matching the id
     #
-    # returns this object's Hash
+    # returns the first object (should be only object)
     def create_from_database(id)
       rec = CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize.underscore} WHERE id = #{id};").first
       if rec.nil?
