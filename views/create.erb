@@ -11,7 +11,7 @@
 <header>
   <a href = "/home">home </a>
   <br>
-  <a href = "/<%= params["something"] %> "><%=params["something"] %></a>
+  <a href = "/<%= params["class_name"] %>/"><%=params["class_name"]%></a>
 </header>
 
 <body>
@@ -26,8 +26,7 @@
 <h1>Enter the variables of the <%= @class_name %>.</h1>
 
 
-
-<form action="/submit/<%=params["something"]%>">
+<form action="/<%=params["class_name"]%>/submit">
 
 <!-- Show all non-foreign keys in an input field -->
   <% @m.non_foreign_key_fields.each do |field| %>
@@ -35,11 +34,11 @@
   <% end %> 
 
   <input type= "hidden" name = "id" value = "<%= @m.id %>">
-  
+
   <!--Show all foreign keys in a select field -->
   <% @m.foreign_key_fields.each_with_index do |foreign_key, x| %>
-    <p><label for=" <%= foreign_key %>  ">Select your <%= foreign_key %>:</label><select name = <%= foreign_key %>>
-      <% @foreign_key_choices[x].each do |choice| %>
+    <p><label for="<%= foreign_key %>">Select your <%= foreign_key %>:</label><select name = <%= foreign_key %>>
+      <% @m.foreign_key_choices[x].each do |choice| %>
         <option value = <%= choice.id %>
           <% if @m.send(foreign_key).id == choice.id %>
             selected

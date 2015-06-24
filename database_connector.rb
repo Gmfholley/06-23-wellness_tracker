@@ -219,6 +219,16 @@ module DatabaseConnector
     vals
   end
   
+  # returns an Array of Arrays, containing all possible choices for the Foreign Keys
+  #
+  # returns an Array of Arrays
+  def foreign_key_choices
+    foreign_key_choices = []
+    foreign_keys.each do |foreign_key|
+      foreign_key_choices << foreign_key.all_from_class
+    end
+  end
+  
   # returns an Array of the values of these foreign_keys
   #
   # returns an Array
@@ -251,12 +261,6 @@ module DatabaseConnector
     self.database_field_names - self.foreign_key_fields
   end
   
-  # # returns an Array of Arrays, the first being the field name and the second being the type
-  # def non_foreign_key_fields_and_types
-  #   a = []
-  #
-  #
-  # end
   
   # returns an Array of this object's parameters
   #

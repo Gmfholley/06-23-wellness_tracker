@@ -41,45 +41,54 @@ get "/:class_name/:action" do
     erb :menu_without_links
   elsif params["action"] == "create"
     # create an object so you can get its instance variables
-    @m = @class_name.create_from_database(params["x"].to_i)
+    @m = @class_name.new
     # get foreign key names in this object and all possible values of the foreign key
-    @foreign_key_choices = []
-    all_foreign_keys = @m.foreign_keys
-    all_foreign_keys.each do |foreign_key|
-      @foreign_key_choices << foreign_key.all_from_class
-    end
-    
     erb :create
+  elsif params["action"] == "submit"
+    @class_name = menu_to_class_name[params["class_name"]]
+  
+    @m = @class_name.new(params)
+  
+    if @m.save_record
+      @message = "Successfully saved!"
+      @menu = object_menu(@class_name, "show")
+      erb :menu_without_links
+    else 
+      erb :create
+    end
   else
     erb :not_appearing
   end
 end
 
 
-get "/submit/:something" do
-  @class_name = slash_to_class_names[params["something"]]
+get "/:class_name/:action/:x" do
+  @class_name = menu_to_class_name[params["class_name"]]
   
-  @m = @class_name.new(params)
-  
-  if @m.save_record
-    @message = "Successfully saved!"
-    erb :message
-  else
-    @foreign_key_choices = []
-    all_foreign_keys = @m.foreign_keys
-    all_foreign_keys.each do |foreign_key|
-      @foreign_key_choices << foreign_key.all_from_class
-    end   
+  if params["action"] == "update"
+    @m = @class_name.create_from_database(params["x"].to_i)
     erb :create
+  elsif params["action"] == "delete"
+    if @class_name.delete_record(params["x"].to_i)
+      @message = "Successfully deleted."
+      @menu = object_menu(@class_name, "show")
+      erb :menu_without_links
+    else
+      @message = "This #{@class_name} was not found or was in another table.  Not deleted."
+      @menu = object_menu(@class_name, "show")
+      erb :menu_without_links
+    end
+  else
+    erb :not_appearing
   end
   
 end
 
 
 
-get "/:not_listed" do
-  erb :not_appearing
-end
+# get "/:not_listed" do
+#   erb :not_appearing
+# end
 
 
 
@@ -128,4 +137,17 @@ end
 # Hash
 def menu_to_class_name
   {"person" => Person}
+end
+
+def menu_title(class_name, action)
+  if action == "show"
+  end
+end
+
+def menu_title_all_but_show(class_string, action)
+  "Which #{class_string} do you want to #{action}?"
+end
+
+def menu_title_show(class_string)
+  "Here are all the #{class_string.pluralize}."
 end
