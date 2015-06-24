@@ -8,7 +8,7 @@ class Person
   attr_accessor :name
   
   
-  # initializes a Rating id
+  # initializes a Person id
   #
   # optional Hash argument
   #         rating  - String of the rating
