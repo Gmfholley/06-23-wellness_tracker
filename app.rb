@@ -2,6 +2,10 @@ require 'sqlite3'
 require 'pry'
 require 'sinatra'
 require 'sinatra/reloader'
+require 'active_support'
+require 'active_support/core_ext/string/filters.rb'
+require 'active_support/core_ext/object/blank.rb'
+require 'active_support/inflector.rb'
 
 
 require_relative 'database_connector.rb'
