@@ -73,8 +73,8 @@ name           | Text
 Intensity           | Description
 ------------------  | ----------------
 id                  | Integer PRIMARY KEY
-name                | Text
-`point_adjustment`  | Integer                     
+name                | Text NOT NULL
+`point_adjustment`  | Integer NOT NULL               
 
 
 Duration            | Description
