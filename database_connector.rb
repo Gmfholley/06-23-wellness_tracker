@@ -28,7 +28,7 @@ module DatabaseConnector
     # returns nothing
     def create_table(field_names_and_types)
       stringify = create_string_of_field_names_and_types(field_names_and_types)
-      CONNECTION.execute("CREATE TABLE IF NOT EXISTS #{self.to_s.pluralize} (#{stringify});")
+      CONNECTION.execute("CREATE TABLE IF NOT EXISTS #{self.to_s.pluralize.underscore} (#{stringify});")
     end
   
     # returns a stringified version of this table, optimizied for SQL statements
@@ -60,7 +60,7 @@ module DatabaseConnector
     # ####
     #   (0..records.length - 1).each do |x|
     #     record_as_string = add_quotes_to_string(records[x].join("', '"))
-    #     CONNECTION.execute("INSERT INTO #{self.to_s.pluralize} (#{string_field_names}) VALUES (#{record_as_string});")
+    #     CONNECTION.execute("INSERT INTO #{self.to_s.pluralize.underscore} (#{string_field_names}) VALUES (#{record_as_string});")
     #   end
     # end
     ##########
@@ -80,7 +80,7 @@ module DatabaseConnector
     # returns nothing
     def delete_record(id)
       if ok_to_delete?(id)
-        CONNECTION.execute("DELETE FROM #{self.to_s.pluralize} WHERE id = #{id};")
+        CONNECTION.execute("DELETE FROM #{self.to_s.pluralize.underscore} WHERE id = #{id};")
       else
         false
       end
@@ -90,7 +90,7 @@ module DatabaseConnector
     #
     # returns Array of a Hash of the resulting records
     def all
-      self.as_objects(CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize};"))
+      self.as_objects(CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize.underscore};"))
     end
     
     
@@ -98,7 +98,7 @@ module DatabaseConnector
     #
     # returns object or false
     def exists?(id)
-      rec = CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize} WHERE id = #{id};").first
+      rec = CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize.underscore} WHERE id = #{id};").first
       if rec.nil?
         false
       else
@@ -111,7 +111,7 @@ module DatabaseConnector
     #
     # returns this object's Hash
     def create_from_database(id)
-      rec = CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize} WHERE id = #{id};").first
+      rec = CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize.underscore} WHERE id = #{id};").first
       if rec.nil?
         self.new()
       else
@@ -141,14 +141,14 @@ module DatabaseConnector
       if field_value.is_a? String
         field_value = add_quotes_to_string(field_value)
       end
-      self.as_objects(CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize} WHERE #{field_name} #{relationship} #{field_value};"))
+      self.as_objects(CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize.underscore} WHERE #{field_name} #{relationship} #{field_value};"))
     end
     
     # returns an Array of Hashes containing the field name information for the table
     #
     # returns an Array
     def get_table_info
-      CONNECTION.execute("PRAGMA table_info(#{self.to_s.pluralize});")
+      CONNECTION.execute("PRAGMA table_info(#{self.to_s.pluralize.underscore});")
     end
     # adds '' quotes around a string for SQL statement
     #
@@ -184,7 +184,7 @@ module DatabaseConnector
   
   # returns the table name - the plural of the object's class
   def table
-    self.class.to_s.pluralize
+    self.class.to_s.pluralize.underscore
   end
   
   # returns an Array of the database_field_names for SQL

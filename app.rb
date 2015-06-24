@@ -10,3 +10,7 @@ require_relative 'foreign_key.rb'
 require_relative 'views/menu.rb'
 require_relative 'views/menu_item.rb'
 require_relative 'views/method_to_call.rb'
+
+
+
+require_relative 'models/person.rb'
