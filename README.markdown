@@ -80,8 +80,8 @@ name                | Text
 Duration            | Description
 ------------------- | ------------------
 id                  | Integer PRIMARY KEY
-name                | Text
-`num_quarter_hours` | Integer
+name                | Text NOT NULL
+`num_quarter_hours` | Integer NOT NULL
 
 
 Exercise Event      | Description
