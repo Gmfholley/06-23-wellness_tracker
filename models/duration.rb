@@ -1,4 +1,6 @@
-require_relative 'database_connector.rb'
+# require "../app.rb"
+
+
 
 class Duration
   include DatabaseConnector
@@ -70,3 +72,32 @@ class Duration
   end
   
 end
+
+# This was just awesome code I wrote to put the values into Duration
+#
+# (1..72).each do |x|
+#   case
+#   when x % 4 == 1
+#     s = " and fifteen minutes"
+#   when x % 4 == 2
+#     s = " and a half"
+#   when x % 4 == 3
+#     s = " and 45 minutes"
+#   when x % 4 == 0
+#     s = ""
+#   end
+#
+#   case
+#   when x < 4
+#     l = Duration.new(name: s, num_quarter_hours: x)
+#     l.save_record
+#   when x >=4 && x < 8
+#     l = Duration.new(name: "1 hour#{s}", num_quarter_hours: x)
+#     l.save_record
+#   when x >= 8
+#     y = (x/4).to_i
+#     l = Duration.new(name: "#{y} hours#{s}", num_quarter_hours: x )
+#     l.save_record
+#   end
+# end
+  

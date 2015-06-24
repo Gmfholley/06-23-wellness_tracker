@@ -14,13 +14,14 @@ class DurationTest < Minitest::Test
   end
   
   def test_crud
-    p = Duration.new(name: "test")
+    p = Duration.new(name: "test", num_quarter_hours: 5)
     assert_equal(Fixnum, p.save_record.class)
     p.name = "Pur"
     assert_equal(Fixnum, p.update_record.class)
+    assert_equal(Duration, Duration.all.first.class)
     assert_equal(true, Duration.ok_to_delete?(p.id))
     assert_equal(Array, Duration.delete_record(p.id).class)
-    assert_equal(Duration, Duration.all.first.class)
+
   end
     
   # TODO - add this test back when I have ExerciseEvents working  
