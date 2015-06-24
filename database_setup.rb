@@ -4,3 +4,4 @@ CONNECTION.execute("PRAGMA foreign_keys = ON;")
 
 
 CONNECTION.execute("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT NOT NULL);")
+CONNECTION.execute("CREATE TABLE IF NOT EXISTS durations (id INTEGER PRIMARY KEY, name TEXT NOT NULL, num_quarter_hours INTEGER NOT NULL);")
