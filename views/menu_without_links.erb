@@ -1,0 +1,18 @@
+<!-- Dynamically creates menu from @menu object >
+<! Menu items are their own links >
+<! Menu items have a parameter called method that contains the method_name that should be called next.  This is what is used as the urls. -->
+
+<header>
+  <a href = "/home">home </a>
+  <br>
+  <a href = "/<%= params["something"] %> "><%=params["something"] %></a>
+</header>
+<body>
+<h1><%=@menu.title%></h1>
+ <ul>
+   <% @menu.menu_items.each do |item| %> 
+     <li><%= item.user_message %></li>
+  <% end %>
+ </ul>
+
+</body>
