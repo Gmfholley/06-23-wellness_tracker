@@ -1,4 +1,4 @@
-CONNECTION=SQLite3::Database.new("wellness_tracker.db")
+CONNECTION=SQLite3::Database.new("/Users/gwendolyn/code/06-23-wellness_tracker/wellness_tracker.db")
 CONNECTION.results_as_hash = true
 CONNECTION.execute("PRAGMA foreign_keys = ON;")
 

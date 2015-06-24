@@ -1,5 +1,5 @@
 require "minitest/autorun"
-require "./app.rb"
+require "../app.rb"
 
 class PersonTest < Minitest::Test
   # One of my specs is that the tip_amount method should blah blah blah.
