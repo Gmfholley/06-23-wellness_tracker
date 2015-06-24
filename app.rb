@@ -19,6 +19,7 @@ require_relative 'views/method_to_call.rb'
 
 require_relative 'models/person.rb'
 require_relative 'models/duration.rb'
+require_relative 'models/intensity.rb'
 
 get "/home" do
   @menu = home_menu
