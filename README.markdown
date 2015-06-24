@@ -54,3 +54,44 @@ Here's what you should not be able to do:
 ##Stretches
 
 If I have time, I will try to make a Rule table and an Achievement Table.  The Rule table will indicate how many points are needed within a particular timeframe.  The Achievement table will combine the user with the rule and will indicate if the user "passed".
+
+
+#ORM  - Object Relationship Model
+Person Table  | Description
+------------- | ---------------------------                                        
+id            |  Integer PRIMARY KEY                                        
+name          |  Text
+
+
+Exercise Types | Description
+-------------- | ------------
+id             | Integer PRIMARY KEY
+name           | Text
+`point_base`   | Integer
+
+
+Intensity           | Description
+------------------  | ----------------
+id                  | Integer PRIMARY KEY
+name                | Text
+`point_adjustment`  | Integer                     
+
+
+Duration            | Description
+------------------- | ------------------
+id                  | Integer PRIMARY KEY
+name                | Text
+`num_quarter_hours` | Integer
+
+
+Exercise Event      | Description
+------------------- | -------------------
+id                  | Integer PRIMARY KEY
+`person_id`         | Integer FOREIGN KEY NOT NULL
+`exercise_type`     | Integer FOREIGN KEY NOT NULL
+date                | Integer NOT NULL
+intensity           | Integer FOREIGN KEY NOT NULL
+duration            | Integer FOREIGN KEY NOT NULL
+points              | Integer DEFAULT 0
+
+Within the Exercise Event table, the combination of `user_id`, `exercise_type` and date should be unique.

@@ -5,13 +5,13 @@
 <header>
   <a href = "/home">home </a>
   <br>
-  <a href = "/<%= params["something"] %> "><%=params["something"] %></a>
+  <a href = "/<%= params["class_name"] %> "><%=params["class_name"] %></a>
 </header>
 <body>
 <h1><%=@menu.title%></h1>
  <ul>
    <% @menu.menu_items.each do |item| %> 
-     <li><a href = <%= "#{params["something"]}/#{item.method.method_name}" %>> <%= item.user_message %></a></li>
+     <li><a href = <%= "/#{item.method.method_name}" %>> <%= item.user_message %></a></li>
   <% end %>
  </ul>
 

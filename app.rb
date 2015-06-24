@@ -18,17 +18,24 @@ require_relative 'views/method_to_call.rb'
 
 
 require_relative 'models/person.rb'
+require_relative 'models/duration.rb'
 
 get "/home" do
   @menu = home_menu
   erb :menu
 end
 
+
+###############################
+# Show the menu for this class
 get "/:class_name" do
   @class_name = menu_to_class_name[params["class_name"]]
   @menu = crud_menu(@class_name)
   erb :menu
 end
+
+########################
+# Do something to this class
 
 get "/:class_name/:action" do
   @class_name = menu_to_class_name[params["class_name"]]
@@ -46,7 +53,6 @@ get "/:class_name/:action" do
     erb :create
   elsif params["action"] == "submit"
     @class_name = menu_to_class_name[params["class_name"]]
-  
     @m = @class_name.new(params)
   
     if @m.save_record
@@ -56,11 +62,14 @@ get "/:class_name/:action" do
     else 
       erb :create
     end
+    
   else
     erb :not_appearing
   end
 end
 
+################################
+# Do something to this object in the class
 
 get "/:class_name/:action/:x" do
   @class_name = menu_to_class_name[params["class_name"]]
@@ -68,7 +77,9 @@ get "/:class_name/:action/:x" do
   if params["action"] == "update"
     @m = @class_name.create_from_database(params["x"].to_i)
     erb :create
+    
   elsif params["action"] == "delete"
+    
     if @class_name.delete_record(params["x"].to_i)
       @message = "Successfully deleted."
       @menu = object_menu(@class_name, "show")
@@ -78,17 +89,16 @@ get "/:class_name/:action/:x" do
       @menu = object_menu(@class_name, "show")
       erb :menu_without_links
     end
+    
   else
     erb :not_appearing
   end
   
 end
 
-
-
-# get "/:not_listed" do
-#   erb :not_appearing
-# end
+get "/:not_listed" do
+  erb :not_appearing
+end
 
 
 
