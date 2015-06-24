@@ -114,6 +114,7 @@ def home_menu
   m = Menu.new("Where would you like to go?")
   m.add_menu_item(user_message: "Work with people", method_name: "person")
   m.add_menu_item(user_message: "Work with durations", method_name: "duration")
+  m.add_menu_item(user_message: "Work with intensities.", method_name: "intensity")
   m
 end
 
@@ -148,7 +149,7 @@ end
 #
 # Hash
 def menu_to_class_name
-  {"person" => Person, "duration" => Duration}
+  {"person" => Person, "duration" => Duration, "intensity" => Intensity}
 end
 
 def menu_title(class_name, action)
