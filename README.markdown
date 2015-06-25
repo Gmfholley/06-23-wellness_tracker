@@ -66,8 +66,8 @@ name          |  Text
 Exercise Types | Description
 -------------- | ------------
 id             | Integer PRIMARY KEY
-name           | Text
-`point_base`   | Integer
+name           | Text NOT NULL
+`point_base`   | Integer NOT NULL
 
 
 Intensity           | Description

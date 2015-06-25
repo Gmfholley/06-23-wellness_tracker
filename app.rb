@@ -20,6 +20,7 @@ require_relative 'views/method_to_call.rb'
 require_relative 'models/person.rb'
 require_relative 'models/duration.rb'
 require_relative 'models/intensity.rb'
+require_relative 'models/exercise_type.rb'
 
 get "/home" do
   @menu = home_menu
@@ -31,8 +32,14 @@ end
 # Show the menu for this class
 get "/:class_name" do
   @class_name = menu_to_class_name[params["class_name"]]
-  @menu = crud_menu(@class_name)
-  erb :menu
+  
+  if @class_name.nil?
+    erb :not_appearing
+  else
+  
+    @menu = crud_menu(@class_name)
+    erb :menu
+  end
 end
 
 ########################
@@ -115,6 +122,7 @@ def home_menu
   m.add_menu_item(user_message: "Work with people", method_name: "person")
   m.add_menu_item(user_message: "Work with durations", method_name: "duration")
   m.add_menu_item(user_message: "Work with intensities.", method_name: "intensity")
+  m.add_menu_item(user_message: "Work with exercise events.", method_name: "exercisetype")
   m
 end
 
@@ -149,7 +157,7 @@ end
 #
 # Hash
 def menu_to_class_name
-  {"person" => Person, "duration" => Duration, "intensity" => Intensity}
+  {"person" => Person, "duration" => Duration, "intensity" => Intensity, "exercisetype" => ExerciseType}
 end
 
 def menu_title(class_name, action)
