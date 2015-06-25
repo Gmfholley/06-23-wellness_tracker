@@ -4,8 +4,9 @@ require 'date'
 class ExerciseEvent
   include DatabaseConnector
   
-  attr_accessor :date, 
-  attr_reader :id, :errors, :exercise_type_id, :person_id, :duration_id, :intensity_id,
+  attr_accessor :date
+  attr_reader :id, :errors, :exercise_type_id, :person_id, :duration_id, :intensity_id
+
   
   # initializes object
   #
@@ -17,31 +18,30 @@ class ExerciseEvent
   #             inentsity_id        - Integer of the studio_id in studios table
   #             points              - Integer of the length of the movie
   #             date                - Date or string in MM-DD-YYYY form
-  
   def initialize(args={})
     if args["id"].blank?
       @id = ""
     else
       @id = args["id"].to_i
     end
-    
+
     date = args["date"] || args[:date]
     @date = Date._strptime(date, '%m/%d/%y')
-    
-    person_id = (args[:rating_id] || args["rating_id"]).to_i
+
+    person_id = (args[:person_id] || args["person_id"]).to_i
     @person_id = ForeignKey.new({id: person_id, class_name: Person})
-    
+
     exercise_type_id = (args[:exercise_type_id] || args["exercise_type_id"]).to_i
     @exercise_type_id = ForeignKey.new({id: exercise_type_id, class_name: ExerciseType})
-    
-    duration_id = (args[:rating_id] || args["rating_id"]).to_i
+
+    duration_id = (args[:duration_id] || args["duration_id"]).to_i
     @duration_id = ForeignKey.new({id: duration_id, class_name: Duration})
-    
-    intensity_id = (args[:rating_id] || args["rating_id"]).to_i
+
+    intensity_id = (args[:intensity_id] || args["intensity_id"]).to_i
     @intensity_id = ForeignKey.new({id: intensity_id, class_name: Intensity})
-    
+
     calculate_points
-    
+
     @errors = []
   end
   
@@ -76,28 +76,42 @@ class ExerciseEvent
   #
   # returns String
   def person
-    person_id.get_object.name
+    person_id.get_object
   end
   
   # returns the exercise type name
   #
   # returns String
   def exercise_type
-    exercise_type_id.get_object.name
+    exercise_type_id.get_object
   end
   
   # returns the intensity name
   #
   # returns String
   def intensity
-    intensity_id.get_object.name
+    intensity_id.get_object
   end
   
   # returns the duration name
   #
   # returns String
   def duration
-    duration_id.get_object.name
+    duration_id.get_object
+  end
+  
+  # returns Boolean to indicate if this date-person-exercise type is a duplicate of a different id in the datbase
+  #
+  # returns Boolean or id of other id value
+  def duplicate_date_person_type?
+    rec = CONNECTION.execute("SELECT * FROM #{table} WHERE person_id = #{person.id} AND date = #{date} and exercise_type_id = #{exercise_type.id};")
+    if rec.empty?
+      false
+    elsif rec.first["id"] == id
+      false
+    else
+      rec.first["id"]
+    end
   end
   
   # put your business rules here, and it returns Boolean to indicate if it is valid
@@ -122,7 +136,11 @@ class ExerciseEvent
     if !intensity_id.valid?
       @errors += intensity_id.errors
     end
-      
+    
+    if duplicate_date_person_type?
+      @errors << {message: "The database already has this person, date, and exercise type combination.  Change this event's date or find and increase the duration of the current record.", variabe: "date, exercise_type_id, person_id"}
+    end
+    
     # checks the number of points
     if points.to_s.empty?
       @errors << {message: "Length cannot be empty.", variable: "points"}
