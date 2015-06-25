@@ -43,21 +43,45 @@ class Person
   #   end
   # end
   
+
+  # returns the total points from all this person's exercise events
+  #
+  # returns an Integer
+  def points
+    sum = 0
+    query_string = "SELECT SUM(exercise_events.points) FROM exercise_events WHERE exercise_events.person_id = #{@id};"
+    #TODO - what does this return?  Borrowed this code from timeslot, but it had a join
+    staff_array = CONNECTION.execute(query_string)
+    staff_array.each do |hash|
+      sum += hash["SUM(locations.num_staff)"]
+    end
+    sum
+  end
   
-  # TODO - make this code live when ExerciseEvents table added
-  # # returns the total staff needed for a particular time slot
-  # #
-  # # returns an Integer
-  # def points
-  #   sum = 0
-  #   query_string = "SELECT SUM(exercise_events.points) FROM exercise_events WHERE exercise_events.person_id = #{@id};"
-  #   #TODO - what does this return?  Borrowed this code from timeslot, but it had a join
-  #   staff_array = CONNECTION.execute(query_string)
-  #   staff_array.each do |hash|
-  #     sum += hash["SUM(locations.num_staff)"]
-  #   end
-  #   sum
-  # end
+  # returns the total points from all this person's exercise events between the start and end dates
+  #
+  # date_start - Date to start  (I believe SQL treats dates as a straight Integer)
+  # date_end   - Date to end (again, SQL treats as an Integer)  
+  #
+  # returns an Integer
+  def points(date_start, date_end)
+    sum = 0
+    query_string = "SELECT SUM(exercise_events.points) FROM exercise_events WHERE exercise_events.person_id = #{@id} AND 
+    exercise_events.date >= date_start AND exercise_events.date <= date_end;"
+    #TODO - what does this return?  Borrowed this code from timeslot, but it had a join
+    staff_array = CONNECTION.execute(query_string)
+    staff_array.each do |hash|
+      sum += hash["SUM(locations.num_staff)"]
+    end
+    sum
+  end
+  
+  # returns Array of all the location-times for this movie
+  #
+  # returns Array
+  def exercise_events
+    ExerciseEvent.where_match("person_id", id, "==")
+  end
   
   # returns Boolean if data is valid
   #
@@ -68,7 +92,6 @@ class Person
     if name.to_s.empty?
       @errors << {message: "Name cannot be empty.", variable: "name"}
     end
-    
     @errors.empty?
   end
   

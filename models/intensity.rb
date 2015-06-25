@@ -13,7 +13,7 @@ class Intensity
   # initializes an Intensity id
   #
   # optional Hash argument
-  #         name              - String of the rating
+  #         name              - String of the intensity
   #         id                - Integer of the id
   #         point_adjustment  - Integer of how points should be adjusted for this intensity
   #
@@ -33,19 +33,26 @@ class Intensity
     "id: #{id}\t\tname: #{name}"
   end
   
-  # TODO - uncomment this section when ExeriseEvent created
-  # # returns Boolean if ok to delete
-  # #
-  # # id - Integer of the id to delete
-  # #
-  # # returns Boolean
-  # def self.ok_to_delete?(id)
-  #   if ExerciseEvent.where_match("intensity_id", id, "==").length > 0
-  #       false
-  #   else
-  #       true
-  #   end
-  # end
+  
+  # returns Array of all the location-times for this movie
+  #
+  # returns Array
+  def exercise_events
+    ExerciseEvent.where_match("intensity_id", id, "==")
+  end
+  
+  # returns Boolean if ok to delete
+  #
+  # id - Integer of the id to delete
+  #
+  # returns Boolean
+  def self.ok_to_delete?(id)
+    if ExerciseEvent.where_match("intensity_id", id, "==").length > 0
+        false
+    else
+        true
+    end
+  end
   
   # returns Boolean if data is valid
   #

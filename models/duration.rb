@@ -13,7 +13,7 @@ class Duration
   # initializes a Duration id
   #
   # optional Hash argument
-  #         name              - String of the rating
+  #         name              - String of the duration
   #         id                - Integer of the id
   #         num_quarter_hours - Integer of the number of quarter hours
   #
@@ -33,19 +33,18 @@ class Duration
     "id: #{id}\t\tname: #{name}"
   end
   
-  # TODO - uncomment this section when ExeriseEvent created
-  # # returns Boolean if ok to delete
-  # #
-  # # id - Integer of the id to delete
-  # #
-  # # returns Boolean
-  # def self.ok_to_delete?(id)
-  #   if ExerciseEvent.where_match("duration_id", id, "==").length > 0
-  #       false
-  #   else
-  #       true
-  #   end
-  # end
+  # returns Boolean if ok to delete
+  #
+  # id - Integer of the id to delete
+  #
+  # returns Boolean
+  def self.ok_to_delete?(id)
+    if ExerciseEvent.where_match("duration_id", id, "==").length > 0
+        false
+    else
+        true
+    end
+  end
   
   # returns Boolean if data is valid
   #
