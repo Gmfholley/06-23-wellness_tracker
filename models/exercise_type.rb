@@ -33,19 +33,18 @@ class ExerciseType
     "id: #{id}\t\tname: #{name}"
   end
   
-  # TODO - uncomment this section when ExeriseEvent created
-  # # returns Boolean if ok to delete
-  # #
-  # # id - Integer of the id to delete
-  # #
-  # # returns Boolean
-  # def self.ok_to_delete?(id)
-  #   if ExerciseEvent.where_match("exercise_type_id", id, "==").length > 0
-  #       false
-  #   else
-  #       true
-  #   end
-  # end
+  # returns Boolean if ok to delete
+  #
+  # id - Integer of the id to delete
+  #
+  # returns Boolean
+  def self.ok_to_delete?(id)
+    if ExerciseEvent.where_match("exercise_type_id", id, "==").length > 0
+        false
+    else
+        true
+    end
+  end
   
   # returns Boolean if data is valid
   #
