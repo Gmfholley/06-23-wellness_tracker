@@ -88,10 +88,10 @@ Exercise Event      | Description
 ------------------- | -------------------
 id                  | Integer PRIMARY KEY
 `person_id`         | Integer FOREIGN KEY NOT NULL
-`exercise_type`     | Integer FOREIGN KEY NOT NULL
+`exercise_type_id`  | Integer FOREIGN KEY NOT NULL
 date                | Integer NOT NULL
-intensity           | Integer FOREIGN KEY NOT NULL
-duration            | Integer FOREIGN KEY NOT NULL
+`intensity_id`      | Integer FOREIGN KEY NOT NULL
+`duration_id`       | Integer FOREIGN KEY NOT NULL
 points              | Integer DEFAULT 0
 
 Within the Exercise Event table, the combination of `user_id`, `exercise_type` and date should be unique.
