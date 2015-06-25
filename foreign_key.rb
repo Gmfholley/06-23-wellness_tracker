@@ -2,7 +2,7 @@ require_relative 'database_connector.rb'
 
 class ForeignKey
   
-  attr_reader :class_name, :field_in_table, :errors
+  attr_reader :class_name, :errors
   attr_accessor :id
   
   def initialize(args={})
