@@ -4,7 +4,7 @@ require 'date'
 class ExerciseEvent
   include DatabaseConnector
   
-  attr_accessor :points, :date, 
+  attr_accessor :date, 
   attr_reader :id, :errors, :exercise_type_id, :person_id, :duration_id, :intensity_id,
   
   # initializes object
@@ -40,7 +40,7 @@ class ExerciseEvent
     intensity_id = (args[:rating_id] || args["rating_id"]).to_i
     @intensity_id = ForeignKey.new({id: intensity_id, class_name: Intensity})
     
-    @pointss = (args[:points] || args["points"]).to_i
+    calculate_points
     
     @errors = []
   end
@@ -59,6 +59,10 @@ class ExerciseEvent
   
   def intensity_id=(new_id)
     @intensity_id = ForeignKey.new({id: new_id, class_name: Intensity})
+  end
+  
+  def calculate_points
+    @points = exercise_type_id.get_object.point_base * duration_id.get_object.num_quarter_hours * intensity_id.get_object.point_adjustment
   end
   
   # returns String representing this object's parameters
