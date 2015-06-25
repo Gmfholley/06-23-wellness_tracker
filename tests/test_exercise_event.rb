@@ -9,7 +9,7 @@ class ExerciseEventTest < Minitest::Test
     exercise_event = ExerciseEvent.new("id" => 1, "date" => "12/23/14", "person_id" => "1", "intensity_id" => "2", 
     "duration_id" => "3", "exercise_type_id" => "4")
     
-    assert_equal(Date._strptime("12/23/14", '%m/%d/%y'), exercise_event.date)
+    assert_equal("12/23/14", exercise_event.date)
     assert_equal(1, exercise_event.person.id)
     assert_equal(2, exercise_event.intensity.id)
     assert_equal(3, exercise_event.duration.id)
@@ -18,18 +18,11 @@ class ExerciseEventTest < Minitest::Test
     exercise_event = ExerciseEvent.new(id: 1, date: "12/23/14", person_id: "1", intensity_id: "2", 
     duration_id: "3", exercise_type_id: "4")
     
-    assert_equal(Date._strptime("12/23/14", '%m/%d/%y'), exercise_event.date)
+    assert_equal("12/23/14", exercise_event.date)
     assert_equal(1, exercise_event.person.id)
     assert_equal(2, exercise_event.intensity.id)
     assert_equal(3, exercise_event.duration.id)
     assert_equal(4, exercise_event.exercise_type.id)
-    #
-    # @id = args["id"] || ""
-    # @name = args[:name] || args["name"]
-    # @description = args[:description] || args["description"]
-    # @rating_id = args[:rating_id] || args["rating_id"]
-    # @studio_id = args[:studio_id] || args["studio_id"]
-    # @length = args[:length] || args["length"]
   end
   
   
@@ -43,17 +36,18 @@ class ExerciseEventTest < Minitest::Test
  #  end
  #
  #
- #  def test_crud
- #    m = ExerciseEvent.new("id" => 1, "name" => "Wendy", "description" => "In a world!", "rating_id" => 1,
- #    "studio_id" => 1, "length" => 1)
- #    assert_equal(Fixnum, m.save_record.class)
- #    m.name = "Pur"
- #    assert_equal(Fixnum, m.update_record.class)
- #    assert_equal(true, ExerciseEvent.ok_to_delete?(m.id))
- #
- #    assert_equal(Array, ExerciseEvent.delete_record(m.id).class)
- #    assert_equal(ExerciseEvent, ExerciseEvent.all.first.class)
- #  end
+  def test_crud
+    m = ExerciseEvent.new(id: 1, date: "12/23/14", person_id: "1", intensity_id: "2", 
+    duration_id: "3", exercise_type_id: "4")
+    assert_equal(Fixnum, m.save_record.class)
+    m.duration_id = 4
+    assert_equal(Fixnum, m.update_record.class)
+    assert_equal(ExerciseEvent, ExerciseEvent.all.first.class)
+    assert_equal(true, ExerciseEvent.ok_to_delete?(m.id))
+
+    assert_equal(Array, ExerciseEvent.delete_record(m.id).class)
+
+  end
  #
  #  # the first exercise_event should be booked
  #  # but maybe it won't after a while

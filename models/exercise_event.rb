@@ -4,7 +4,7 @@ require 'date'
 class ExerciseEvent
   include DatabaseConnector
   
-  attr_accessor :date
+  attr_accessor
   attr_reader :id, :errors, :exercise_type_id, :person_id, :duration_id, :intensity_id
 
   
@@ -17,7 +17,7 @@ class ExerciseEvent
   #             duration_id         - Integer of the rating_id in ratings table
   #             inentsity_id        - Integer of the studio_id in studios table
   #             points              - Integer of the length of the movie
-  #             date                - Date or string in MM-DD-YYYY form
+  #             date                - Date or string in MM-DD-YY form
   def initialize(args={})
     if args["id"].blank?
       @id = ""
@@ -26,7 +26,7 @@ class ExerciseEvent
     end
 
     date = args["date"] || args[:date]
-    @date = Date._strptime(date, '%m/%d/%y')
+    @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
 
     person_id = (args[:person_id] || args["person_id"]).to_i
     @person_id = ForeignKey.new({id: person_id, class_name: Person})
@@ -59,6 +59,14 @@ class ExerciseEvent
   
   def intensity_id=(new_id)
     @intensity_id = ForeignKey.new({id: new_id, class_name: Intensity})
+  end
+  
+  def date=(new_date)
+    @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
+  end
+  
+  def date
+    Time.at(@date).strftime("%m/%d/%y")
   end
   
   def calculate_points
@@ -104,6 +112,7 @@ class ExerciseEvent
   #
   # returns Boolean or id of other id value
   def duplicate_date_person_type?
+    binding.pry
     rec = CONNECTION.execute("SELECT * FROM #{table} WHERE person_id = #{person.id} AND date = #{date} and exercise_type_id = #{exercise_type.id};")
     if rec.empty?
       false
