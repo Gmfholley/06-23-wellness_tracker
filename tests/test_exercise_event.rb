@@ -25,6 +25,32 @@ class ExerciseEventTest < Minitest::Test
     assert_equal(4, exercise_event.exercise_type.id)
   end
   
+  def test_changes_to_foreign_keys
+    exercise_event = ExerciseEvent.new("id" => 1, "date" => "12/23/14", "person_id" => "1", "intensity_id" => "2", 
+    "duration_id" => "3", "exercise_type_id" => "4")
+    
+    exercise_event.person_id = 5
+    exercise_event.duration_id = 6
+    exercise_event.intensity_id = 1
+    exercise_event.exercise_type_id = 7
+    exercise_event.date = "12/24/14"
+    
+    assert_equal(5, exercise_event.person_id.id)
+    assert_equal(6, exercise_event.duration_id.id)
+    assert_equal(1, exercise_event.intensity_id.id)
+    assert_equal(7, exercise_event.exercise_type.id)
+    assert_equal("12/24/14", exercise_event.date)
+    
+    exercise_event.person_id = "8"
+    exercise_event.duration_id = "9"
+    exercise_event.intensity_id = "3"
+    exercise_event.exercise_type_id = "10"
+    assert_equal(8, exercise_event.person_id.id)
+    assert_equal(9, exercise_event.duration_id.id)
+    assert_equal(3, exercise_event.intensity_id.id)
+    assert_equal(10, exercise_event.exercise_type.id)
+
+  end
   
   # def test_to_s
  #    exercise_event = ExerciseEvent.new("id" => 1, "name" => "Wendy", "description" => "In a world!", "rating_id" => 1,
@@ -48,20 +74,8 @@ class ExerciseEventTest < Minitest::Test
     assert_equal(Array, ExerciseEvent.delete_record(m.id).class)
 
   end
- #
- #  # the first exercise_event should be booked
- #  # but maybe it won't after a while
- #  def test_ok_to_delete
- #    m = ExerciseEvent.new("name" => "Wendy", "description" => "In a world!", "rating_id" => 1,
- #    "studio_id" => 1, "length" => 1)
- #    m.save_record
- #    l = LocationTime.new(location_id: 3, timeslot_id: 5, exercise_event_id: m.id)
- #    l.save_record
- #    assert_equal(false, ExerciseEvent.ok_to_delete?(m.id))
- #    LocationTime.delete_record(l.id)
- #    assert_equal(true, ExerciseEvent.ok_to_delete?(m.id))
- #    ExerciseEvent.delete_record(m.id)
- #  end
+  
+  
  #
  #  def test_location_times
  #    m = ExerciseEvent.new("id" => 1, "name" => "Wendy", "description" => "In a world!", "rating_id" => 1,

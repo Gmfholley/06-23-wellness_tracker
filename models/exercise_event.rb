@@ -62,15 +62,15 @@ class ExerciseEvent
   end
   
   def date=(new_date)
-    @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
+    @date = Date.strptime(new_date, '%m/%d/%y').to_time.to_i
   end
   
   def date
     Time.at(@date).strftime("%m/%d/%y")
   end
   
-  def calculate_points
-    @points = exercise_type_id.get_object.point_base * duration_id.get_object.num_quarter_hours * intensity_id.get_object.point_adjustment
+  def points
+    @points = exercise_type.point_base * duration.num_quarter_hours * intensity.point_adjustment
   end
   
   # returns String representing this object's parameters
@@ -112,8 +112,7 @@ class ExerciseEvent
   #
   # returns Boolean or id of other id value
   def duplicate_date_person_type?
-    binding.pry
-    rec = CONNECTION.execute("SELECT * FROM #{table} WHERE person_id = #{person.id} AND date = #{date} and exercise_type_id = #{exercise_type.id};")
+    rec = CONNECTION.execute("SELECT * FROM #{table} WHERE person_id = #{person.id} AND date = #{@date} and exercise_type_id = #{exercise_type.id};")
     if rec.empty?
       false
     elsif rec.first["id"] == id
@@ -162,10 +161,10 @@ class ExerciseEvent
     end
     
     # checks the number of points
-    if date.to_s.empty?
+    if @date.to_s.empty?
       @errors << {message: "Date cannot be empty.", variable: "date"}
-    elsif date.is_a? Date
-      if date < 1
+    elsif @date.is_a? Integer
+      if @date < 1
         @errors << {message: "Date must be greater than 0.", variable: "date"}
       end
     else
