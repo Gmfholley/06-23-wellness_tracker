@@ -1,3 +1,4 @@
+require 'date'
 require 'sqlite3'
 require 'pry'
 require 'sinatra'
@@ -21,6 +22,7 @@ require_relative 'models/person.rb'
 require_relative 'models/duration.rb'
 require_relative 'models/intensity.rb'
 require_relative 'models/exercise_type.rb'
+require_relative 'models/exercise_event.rb'
 
 get "/home" do
   @menu = home_menu
@@ -123,6 +125,7 @@ def home_menu
   m.add_menu_item(user_message: "Work with durations", method_name: "duration")
   m.add_menu_item(user_message: "Work with intensities.", method_name: "intensity")
   m.add_menu_item(user_message: "Work with exercise types.", method_name: "exercise_type")
+  m.add_menu_item(user_message: "Work with exercise events.", method_name: "exercise_event")
   m
 end
 
@@ -157,7 +160,7 @@ end
 #
 # Hash
 def menu_to_class_name
-  {"person" => Person, "duration" => Duration, "intensity" => Intensity, "exercise_type" => ExerciseType}
+  {"person" => Person, "duration" => Duration, "intensity" => Intensity, "exercise_type" => ExerciseType, "exercise_event" => ExerciseEvent}
 end
 
 def menu_title(class_name, action)
