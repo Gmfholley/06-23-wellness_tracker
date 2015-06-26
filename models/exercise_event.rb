@@ -5,7 +5,6 @@ class ExerciseEvent
   include DatabaseConnector
   
   attr_reader :id, :errors, :exercise_type_id, :person_id, :duration_id, :intensity_id, :date
-
   
   # initializes object
   #
@@ -17,6 +16,8 @@ class ExerciseEvent
   #             inentsity_id        - Integer of the studio_id in studios table
   #             points              - Integer of the length of the movie
   #             date                - Date or string in MM-DD-YY form
+  #
+  # returns self
   def initialize(args={})
     if args["id"].blank?
       @id = ""
@@ -25,6 +26,7 @@ class ExerciseEvent
     end
 
     set_date(args["date"] || args[:date])
+    
     @person_id = set_foreign_key((args[:person_id] || args["person_id"]).to_i, Person)
     @exercise_type_id = set_foreign_key((args[:exercise_type_id] || args["exercise_type_id"]).to_i, ExerciseType)
     @duration_id = set_foreign_key((args[:duration_id] || args["duration_id"]).to_i, Duration)
@@ -32,31 +34,62 @@ class ExerciseEvent
     @errors = []
   end
   
+  
+  # sets the person's id
+  #
+  # new_id - Integer
+  #
+  # returns the Foreign Key
   def person_id=(new_id)
-    @person_id = ForeignKey.new({id: new_id, class_name: Person})
+    @person_id = set_foreign_key(new_id.to_i, Person)
   end
   
+  # sets the exercise_type id
+  #
+  # new_id - Integer
+  #
+  # returns the Foreign Key
   def exercise_type_id=(new_id)
-    @exercise_type_id = ForeignKey.new({id: new_id, class_name: ExerciseType})
+    @exercise_type_id = set_foreign_key(new_id.to_i, ExerciseType)
   end
   
+  # sets the duration id
+  #
+  # new_id - Integer
+  #
+  # returns the Foreign Key
   def duration_id=(new_id)
-    @duration_id = ForeignKey.new({id: new_id, class_name: Duration})
+    @duration_id = set_foreign_key(new_id.to_i, Duration)
   end
   
+  # sets the intensity id
+  #
+  # new_id - Integer
+  #
+  # returns the Foreign Key
   def intensity_id=(new_id)
-    @intensity_id = ForeignKey.new({id: new_id, class_name: Intensity})
+    @intensity_id = set_foreign_key(new_id.to_i, Intensity)
   end
   
+  # sets the date
+  #
+  # new_date - String of the date
+  #
+  # returns the integer of the date
   def date=(new_date)
-    @date = Date.strptime(new_date, '%m/%d/%y').to_time.to_i
+    set_date(new_date)
   end
   
-  
+  # returns the date as a String in mm/dd/yy form
+  #
+  # returns String
   def date_humanized
     Time.at(@date).to_date.strftime("%m/%d/%y")
   end
   
+  # calculates and sets the points
+  #
+  # returns an Integer (defaults to 0)
   def points
     @points = exercise_type.point_base * duration.num_quarter_hours * intensity.point_adjustment
   end
@@ -208,6 +241,7 @@ class ExerciseEvent
   
   private
   
+  #TODO - if they enter this as mm/dd/yyyy, it puts it as mm/dd/yy and leaves off last two digits of year
   # sets date from initialization method
   #
   # date - checks if integer, blank or a String in mm/dd/yy form
@@ -225,6 +259,12 @@ class ExerciseEvent
     end
   end
   
+  # returns the ForeignKey object for this id and class
+  #
+  # this_id     - Integer of the id
+  # name_class  - Class
+  #
+  # returns a ForiegnKey
   def set_foreign_key(this_id, name_class)
     ForeignKey.new(id: this_id, class_name: name_class)
   end
