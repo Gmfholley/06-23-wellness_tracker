@@ -187,4 +187,39 @@ class ExerciseEvent
     # returns whether @errors is empty
     @errors.empty?
   end
+  
+############################
+  #  returns a person's total points from all their exercise events
+  #
+  # id - Integer of the person_id
+  #
+  # returns an Integer (0 if nil)
+  def self.points_for_person(id)
+    ExerciseEvent.sum_field_where("points", "person_id", id, "==").to_i
+  end
+  
+  
+  # TODO - refactor into date class to handle some of this
+  # gets the points for this person within the dates
+  #
+  #     id            - Integer of person_id
+  #     date_start    - String of the date in "mm/dd/yy"
+  #     date_end      - String of the date in "mm/dd/yy"
+  #
+  # Returns an Integer (0 if nil)
+  def self.points_for_person_within_dates(id, date_start, date_end)
+    # ExerciseEvent.sum_field_where("points", "person_id", id, "==")
+  #   # convert to int first
+    date_start_int = Date.strptime(date_start, "%m/%d/%y").to_time.to_i
+    date_end_int = Date.strptime(date_end, "%m/%d/%y").to_time.to_i
+    
+    
+    query_string = "SELECT SUM(points) FROM #{self.to_s.underscore.pluralize} WHERE person_id = #{id} AND 
+    date >= #{date_start_int} AND date <= #{date_end_int};"
+    #This returns an Array of a hash with SUM(exercise_events.points)
+    CONNECTION.execute(query_string).first[0].to_i
+  end
+  
+  
+  
 end
