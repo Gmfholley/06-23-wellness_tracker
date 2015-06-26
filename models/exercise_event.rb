@@ -28,7 +28,7 @@ class ExerciseEvent
     date = args["date"] || args[:date]
     if date.is_a? Integer
       @date = date
-    else
+    elsif !date.blank?
       @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
     end
 
@@ -133,7 +133,6 @@ class ExerciseEvent
   def valid?
     @errors = []
     # check thename exists and is not empty
-    
     if !person_id.valid?
       @errors += person_id.errors
     end
@@ -146,12 +145,15 @@ class ExerciseEvent
       @errors += exercise_type_id.errors
     end
     
-    if !intensity_id.valid?
-      @errors += intensity_id.errors
+    # only do a database query if you have good enough data to check the database
+    if @errors.length == 0
+      if duplicate_date_person_type?
+        @errors << {message: "The database already has this person, date, and exercise type combination.  Change this event's date or find and increase the duration of the current record.", variabe: "date, exercise_type_id, person_id"}
+      end
     end
     
-    if duplicate_date_person_type?
-      @errors << {message: "The database already has this person, date, and exercise type combination.  Change this event's date or find and increase the duration of the current record.", variabe: "date, exercise_type_id, person_id"}
+    if !intensity_id.valid?
+      @errors += intensity_id.errors
     end
     
     # checks the number of points

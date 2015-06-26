@@ -93,45 +93,50 @@ class ExerciseEventTest < Minitest::Test
 
   end
 
- #
- #  def test_valid
- #    # Can't be nil
- #    m = ExerciseEvent.new(name: nil, description: nil, studio_id: nil, rating_id: nil, length: nil)
- #    m.valid?
- #    assert_equal(5, m.errors.length)
- #
- #    # can't be empty strings
- #    m = ExerciseEvent.new(name: "", description: "", studio_id: "", rating_id: "", length: "")
- #    m.valid?
- #    assert_equal(5, m.errors.length)
- #
- #    # can't be whatever is created when no args are passed
- #    m = ExerciseEvent.new()
- #    m.valid?
- #    assert_equal(5, m.errors.length)
- #
- #
- #    # rating & studio id must belong to the table; length must be a number
- #    m = ExerciseEvent.new(name: "s", description: "s", studio_id: "s", rating_id: "s", length: "s")
- #    m.valid?
- #    assert_equal(3, m.errors.length)
- #
- #    # length must be 0 or greater, and studio & rating must belong to the table
- #    m = ExerciseEvent.new(name: 0, description: 0, studio_id: 0, rating_id: 0, length: 0)
- #    m.valid?
- #    assert_equal(3, m.errors.length)
- #
- #
- #    # num_time_slots can't be more than the maximum number of time slots allowed
- #    m = ExerciseEvent.new(name: 1, description: 1, studio_id: Studio.all.last.id + 1, rating_id: Rating.all.last.id + 1, length: 0)
- #    m.valid?
- #    assert_equal(3, m.errors.length)
- #    m.studio_id = Studio.all.last.id
- #    m.rating_id = Rating.all.last.id
- #    m.valid?
- #    assert_equal(0, m.errors.length)
- #
- #  end
+ 
+  def test_valid
+    # Can't be nil
+    m = ExerciseEvent.new(id: nil, date: nil, person_id: nil, intensity_id: nil, 
+    duration_id: nil, exercise_type_id: nil)
+    m.valid?
+    assert_equal(5, m.errors.length)
+
+    # can't be empty strings
+    m = ExerciseEvent.new(id: "", date: "", person_id: "", intensity_id: "", 
+    duration_id: "", exercise_type_id: "")
+    m.valid?
+    assert_equal(5, m.errors.length)
+
+    # can't be whatever is created when no args are passed
+    m = ExerciseEvent.new()
+    m.valid?
+    assert_equal(5, m.errors.length)
+
+
+    # person, intensity, duration, type must belong to the table; length must be a number
+    m = ExerciseEvent.new(id: 1, date: "12/24/14", person_id: 0, intensity_id: 0, 
+    duration_id: 0, exercise_type_id: 0)
+    m.valid?
+    assert_equal(4, m.errors.length)
+
+    # date must be greater than 0
+    m = ExerciseEvent.new(id: 1, date: 0, person_id: "1", intensity_id: "2", 
+    duration_id: "3", exercise_type_id: "4")
+    m.valid?
+    assert_equal(1, m.errors.length)
+
+
+    # num_time_slots can't be more than the maximum number of time slots allowed
+    m = ExerciseEvent.new(id: 1, date: "12/24/14")
+
+    m.person_id = Person.all.last.id + 1
+    m.intensity_id = Intensity.all.last.id + 1
+    m.exercise_type_id = ExerciseType.all.last.id + 1
+    m.duration_id = Duration.all.last.id + 1
+    m.valid?
+    assert_equal(4, m.errors.length)
+
+  end
 
   
 end
