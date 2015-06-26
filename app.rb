@@ -59,12 +59,13 @@ get "/:class_name/:action" do
   elsif params["action"] == "create"
     # create an object so you can get its instance variables
     @m = @class_name.new
+    @foreign_key_choices = @m.foreign_key_choices
     # get foreign key names in this object and all possible values of the foreign key
     erb :create
   elsif params["action"] == "submit"
     @class_name = menu_to_class_name[params["class_name"]]
     @m = @class_name.new(params)
-  
+    @foreign_key_choices = @m.foreign_key_choices
     if @m.save_record
       @message = "Successfully saved!"
       @menu = object_menu(@class_name, "show")
@@ -86,6 +87,7 @@ get "/:class_name/:action/:x" do
   
   if params["action"] == "update"
     @m = @class_name.create_from_database(params["x"].to_i)
+    @foreign_key_choices = @m.foreign_key_choices
     erb :create
     
   elsif params["action"] == "delete"
