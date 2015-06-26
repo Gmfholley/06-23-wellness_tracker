@@ -24,12 +24,14 @@ class ExerciseTypeTest < Minitest::Test
 
   end
     
-  # TODO - add this test back when I have ExerciseEvents working  
-  # # tests true above in crud
-  # def test_ok_to_delete
-  #   assert_equal(false, ExerciseType.ok_to_delete?(3))
-  # end
-  #
+
+  # tests true above in crud
+  def test_ok_to_delete
+    assert_equal(false, ExerciseType.ok_to_delete?(1))
+    assert_equal(true, ExerciseType.ok_to_delete?(0))
+    assert_equal(true, ExerciseType.ok_to_delete?(ExerciseType.all.last.id + 10))
+  end
+
   def test_valid
     # Can't be nil
     p = ExerciseType.new(name: nil, point_base: nil)
