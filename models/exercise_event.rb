@@ -24,29 +24,11 @@ class ExerciseEvent
       @id = args["id"].to_i
     end
 
-    date = args["date"] || args[:date]
-    if date.is_a? Integer
-      @date = date
-    elsif !date.blank?
-      @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
-    else
-      @date = nil
-    end
-
-    person_id = (args[:person_id] || args["person_id"]).to_i
-    @person_id = ForeignKey.new({id: person_id, class_name: Person})
-
-    exercise_type_id = (args[:exercise_type_id] || args["exercise_type_id"]).to_i
-    @exercise_type_id = ForeignKey.new({id: exercise_type_id, class_name: ExerciseType})
-
-    duration_id = (args[:duration_id] || args["duration_id"]).to_i
-    @duration_id = ForeignKey.new({id: duration_id, class_name: Duration})
-
-    intensity_id = (args[:intensity_id] || args["intensity_id"]).to_i
-    @intensity_id = ForeignKey.new({id: intensity_id, class_name: Intensity})
-
-    points
-
+    set_date(args["date"] || args[:date])
+    set_foreign_key(@person_id, (args[:person_id] || args["person_id"]).to_i, Person)
+    set_foreign_key(@exercise_type_id, (args[:exercise_type_id] || args["exercise_type_id"]).to_i, ExerciseType)
+    set_foreign_key(@duration_id, (args[:duration_id] || args["duration_id"]).to_i, Duration)
+    set_foreign_key(@intensity_id, (args[:intensity_id] || args["intensity_id"]).to_i, Intensity)
     @errors = []
   end
   
@@ -133,7 +115,6 @@ class ExerciseEvent
     self.id != this_date_person_and_type.id && this_date_person_and_type.id != ""
   end
   
-  
   # put your business rules here, and it returns Boolean to indicate if it is valid
   #
   # returns Boolean
@@ -152,6 +133,17 @@ class ExerciseEvent
       @errors += exercise_type_id.errors
     end
     
+    # checks the number of points
+    if @date.to_s.empty?
+      @errors << {message: "Date cannot be empty.", variable: "date"}
+    elsif @date.is_a? Integer
+      if @date < 1
+        @errors << {message: "Date must be greater than 0.", variable: "date"}
+      end
+    else
+      @errors << {message: "Date must be a number.", variable: "date"}
+    end
+    
     # only do a database query if you have good enough data to check the database
     if @errors.length == 0
       if duplicate_date_person_type?
@@ -164,6 +156,7 @@ class ExerciseEvent
     end
     
     # checks the number of points
+    points
     if points.to_s.empty?
       @errors << {message: "Length cannot be empty.", variable: "points"}
     elsif points.is_a? Integer
@@ -172,17 +165,6 @@ class ExerciseEvent
       end
     else
       @errors << {message: "Points must be a number.", variable: "points"}
-    end
-    
-    # checks the number of points
-    if @date.to_s.empty?
-      @errors << {message: "Date cannot be empty.", variable: "date"}
-    elsif @date.is_a? Integer
-      if @date < 1
-        @errors << {message: "Date must be greater than 0.", variable: "date"}
-      end
-    else
-      @errors << {message: "Date must be a number.", variable: "date"}
     end
   
     # returns whether @errors is empty
@@ -222,6 +204,27 @@ class ExerciseEvent
     else
       0
     end
+  end
+  
+  private
+  
+  # sets date from initialization method
+  #
+  # date - checks if integer, blank or a String in mm/dd/yy form
+  #
+  # returns @date
+  def set_date(date)  
+    if date.is_a? Integer
+      @date = date
+    elsif !date.blank?
+      @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
+    else
+      @date = nil
+    end
+  end
+  
+  def set_foreign_key(this_attribute, this_id, name_class)
+    this_attribute = ForeignKey.new(id: this_id, class_name: name_class)
   end
   
   
