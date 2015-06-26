@@ -1,0 +1,70 @@
+<!-- Passed three parameters to dynamically create the "create" page for any object>
+<! Objects must have the DatabaseConnector module included and must have Foreign Keys stored as ForeignKey object, rather than an Integer, etc.>
+
+<! @foreign_key_fields   - An Array of the field names of parameters that are ForeignKeys>
+<! @foreign_key_choices  - An Array of Arrays.  The inner Array contains all possible objects for this foreign key.  >
+<! @non_foreign_key_fields - An Array of the field names of non-foreign keys. >
+<!-- >
+
+<!-- <body> -->
+
+<header>
+  <a href = "/home">home </a>
+  <br>
+  <a href = "../../<%= params["class_name"] %>"><%=params["class_name"]%></a>
+</header>
+
+<body>
+  
+  <!--Show error messages -->
+  <% unless @m.errors.nil? %>
+    <% @m.errors.each do |error|   %>
+        <p><em>Error with <%= error[:variable] %>: <%= error[:message] %></em></p>
+    <% end %>
+  <% end %>
+  
+<h1>Enter the variables of the <%= @class_name %>.</h1>
+
+
+<form action="/<%=params["class_name"]%>/submit">
+
+<!-- Show all non-foreign keys in an input field -->
+<!-- For date fields, show them as input type as date and humanize the date -->
+  <% @m.non_foreign_key_fields.each do |field| %>
+    <% if field != "date" %>
+      <p>
+        <label for = "<%= field %> ">Select your <%= field %>:
+        </label>
+        <input type= "text" name = <%= field %> field placeholder= "Type in the <%= field %>" value = "<%= @m.send(field) %>" >
+        </input>
+      </p>
+    <% else %>
+      <p>
+        <label for = "<%= field %> ">Select your <%= field %>:
+        </label>
+        <input type= "date" name = <%= field %> field placeholder= "mm/dd/yy" value = "<%= @m.date_humanized %>" >
+        </input>
+      </p>
+    <% end  %>
+  <% end %> 
+
+  <input type= "hidden" name = "id" value = "<%= @m.id %>">
+
+  <!--Show all foreign keys in a select field -->
+  <% @m.foreign_key_fields.each_with_index do |foreign_key, x| %>
+    <p><label for="<%= foreign_key %>">Select your <%= foreign_key %>:</label><select name = <%= foreign_key %>>
+      <% @foreign_key_choices[x].each do |choice| %>
+        <option value = <%= choice.id %>
+          <% if @m.send(foreign_key).id == choice.id %>
+            selected
+          <% end %>> <%= choice.name %></option>
+      <% end %>
+    </select></p>
+  <% end %>
+
+
+  <input type = "submit">
+
+</form>
+
+</body>
