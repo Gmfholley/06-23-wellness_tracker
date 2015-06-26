@@ -48,6 +48,7 @@ end
 # Do something to this class
 
 get "/:class_name/:action" do
+  
   @class_name = menu_to_class_name[params["class_name"]]
   
   if params["action"] == "update" || params["action"] == "delete"
@@ -71,7 +72,7 @@ get "/:class_name/:action" do
     
   elsif params["action"] == "submit"
     @class_name = menu_to_class_name[params["class_name"]]
-    @m = @class_name.new(params)
+    @m = @class_name.new(params["create_form"])
     @foreign_key_choices = @m.foreign_key_choices
   
     if @m.save_record

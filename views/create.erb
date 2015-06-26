@@ -30,21 +30,32 @@
 
 <!-- Show all non-foreign keys in an input field -->
   <% @m.non_foreign_key_fields.each do |field| %>
-    <p><label for = "<%= field %> ">Select your <%= field %>:</label><input type= "text" name = <%= field %> field placeholder= "Type in the <%= field %>" value = "<%= @m.send(field) %>" ></input></p>
+    <p>
+      <label for = "<%= field %> ">
+        Select your <%= field %>:
+      </label>
+      <input type= "text" name = create_form[<%= field %>] field placeholder= "Type in the <%= field %>" value = "<%= @m.send(field) %>" >
+      </input>
+    </p>
   <% end %> 
 
-  <input type= "hidden" name = "id" value = "<%= @m.id %>">
+  <input type= "hidden" name = create_form["id"] value = "<%= @m.id %>">
 
   <!--Show all foreign keys in a select field -->
   <% @m.foreign_key_fields.each_with_index do |foreign_key, x| %>
-    <p><label for="<%= foreign_key %>">Select your <%= foreign_key %>:</label><select name = <%= foreign_key %>>
+    <p>
+      <label for="<%= foreign_key %>">
+        Select your <%= foreign_key %>:
+      </label>
+      <select name = create_form[<%= foreign_key %>]>
       <% @foreign_key_choices[x].each do |choice| %>
         <option value = <%= choice.id %>
           <% if @m.send(foreign_key).id == choice.id %>
             selected
           <% end %>> <%= choice.name %></option>
       <% end %>
-    </select></p>
+      </select>
+    </p>
   <% end %>
 
 
