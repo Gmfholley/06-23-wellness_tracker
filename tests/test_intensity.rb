@@ -24,12 +24,16 @@ class IntensityTest < Minitest::Test
 
   end
     
-  # TODO - add this test back when I have ExerciseEvents working  
-  # # tests true above in crud
-  # def test_ok_to_delete
-  #   assert_equal(false, Intensity.ok_to_delete?(3))
-  # end
-  #
+
+  # tests true above in crud
+  def test_ok_to_delete
+    assert_equal(false, Intensity.ok_to_delete?(2))
+    assert_equal(false, Intensity.ok_to_delete?(1))
+    #at this time, I have no intensity of type 3, but there are only 3 intensity ids in my current program
+    # assert_equal(true, Intensity.ok_to_delete?(3))
+    assert_equal(true, Intensity.ok_to_delete?(0))
+  end
+  
   def test_valid
     # Can't be nil
     p = Intensity.new(name: nil, point_adjustment: nil)
