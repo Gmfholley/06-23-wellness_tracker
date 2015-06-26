@@ -31,6 +31,19 @@ class PersonTest < Minitest::Test
     assert_equal(true, Person.ok_to_delete?(Person.all.last.id + 10))    
   end
   
+  
+  def test_points
+    p = Person.create_from_database(1)
+    assert_equal(Fixnum, p.total_points.class)
+    assert_equal(Fixnum, p.points("01/01/00", "12/23/15").class)
+   
+    p = Person.new
+    assert_equal(0, p.total_points)
+    assert_equal(0, p.points("01/01/00", "12/23/15"))
+    
+    
+  end
+  
   def test_valid
     # Can't be nil
     p = Person.new(name: nil)

@@ -213,11 +213,14 @@ class ExerciseEvent
     date_start_int = Date.strptime(date_start, "%m/%d/%y").to_time.to_i
     date_end_int = Date.strptime(date_end, "%m/%d/%y").to_time.to_i
     
-    
-    query_string = "SELECT SUM(points) FROM #{self.to_s.underscore.pluralize} WHERE person_id = #{id} AND 
+    if !id.blank?
+      query_string = "SELECT SUM(points) FROM #{self.to_s.underscore.pluralize} WHERE person_id = #{id} AND 
     date >= #{date_start_int} AND date <= #{date_end_int};"
-    #This returns an Array of a hash with SUM(exercise_events.points)
-    CONNECTION.execute(query_string).first[0].to_i
+      #This returns an Array of a hash with SUM(exercise_events.points)
+      CONNECTION.execute(query_string).first[0].to_i
+    else
+      0
+    end
   end
   
   
