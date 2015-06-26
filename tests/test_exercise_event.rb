@@ -9,7 +9,7 @@ class ExerciseEventTest < Minitest::Test
     exercise_event = ExerciseEvent.new("id" => 1, "date" => "12/23/14", "person_id" => "1", "intensity_id" => "2", 
     "duration_id" => "3", "exercise_type_id" => "4")
     
-    assert_equal("12/23/14", exercise_event.date)
+    assert_equal("12/23/14", exercise_event.date_humanized)
     assert_equal(1, exercise_event.person.id)
     assert_equal(2, exercise_event.intensity.id)
     assert_equal(3, exercise_event.duration.id)
@@ -18,7 +18,7 @@ class ExerciseEventTest < Minitest::Test
     exercise_event = ExerciseEvent.new(id: 1, date: "12/23/14", person_id: "1", intensity_id: "2", 
     duration_id: "3", exercise_type_id: "4")
     
-    assert_equal("12/23/14", exercise_event.date)
+    assert_equal("12/23/14", exercise_event.date_humanized)
     assert_equal(1, exercise_event.person.id)
     assert_equal(2, exercise_event.intensity.id)
     assert_equal(3, exercise_event.duration.id)
@@ -39,7 +39,7 @@ class ExerciseEventTest < Minitest::Test
     assert_equal(6, exercise_event.duration_id.id)
     assert_equal(1, exercise_event.intensity_id.id)
     assert_equal(7, exercise_event.exercise_type.id)
-    assert_equal("12/24/14", exercise_event.date)
+    assert_equal("12/24/14", exercise_event.date_humanized)
     
     exercise_event.person_id = "8"
     exercise_event.duration_id = "9"
@@ -63,7 +63,7 @@ class ExerciseEventTest < Minitest::Test
  #
  #
   def test_crud
-    m = ExerciseEvent.new(id: 1, date: "12/23/14", person_id: "1", intensity_id: "2", 
+    m = ExerciseEvent.new(id: 1, date: "12/24/14", person_id: "1", intensity_id: "2", 
     duration_id: "3", exercise_type_id: "4")
     assert_equal(Fixnum, m.save_record.class)
     m.duration_id = 4
@@ -82,13 +82,15 @@ class ExerciseEventTest < Minitest::Test
     
     assert_equal(false, m.duplicate_date_person_type?)
 
+    n= ExerciseEvent.new(date: m.date, person_id: m.person_id.id, intensity_id: m.intensity_id.id, 
+    duration_id: m.duration_id.id, exercise_type_id: m.exercise_type_id.id)
+    assert_equal(Fixnum, n.duplicate_date_person_type?.class)
+    
+    
     m.exercise_type_id = 2
     
     assert_equal(false, m.duplicate_date_person_type?)
-    n= ExerciseEvent.new(date: m.date, person_id: m.person_id.id, intensity_id: m.intensity_id.id, 
-    duration_id: m.duration_id.id, exercise_type_id: m.exercise_type_id.id)
-    
-    assert_equal(true, n.duplicate_date_person_type?)
+
   end
 
  #

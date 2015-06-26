@@ -67,7 +67,7 @@ class ExerciseEvent
   
   def date=(new_date)
     @date = Date.strptime(new_date, '%m/%d/%y').to_time.to_i
-  __END__
+  end
   
   
   def date_humanized
@@ -117,7 +117,6 @@ class ExerciseEvent
   #
   # returns Boolean or id of other id value
   def duplicate_date_person_type?
-    binding.pry
     rec = CONNECTION.execute("SELECT * FROM #{table} WHERE person_id = #{person.id} AND date = #{@date} and exercise_type_id = #{exercise_type.id};")
     if rec.empty?
       false
