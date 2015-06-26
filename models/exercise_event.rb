@@ -25,10 +25,10 @@ class ExerciseEvent
     end
 
     set_date(args["date"] || args[:date])
-    set_foreign_key(@person_id, (args[:person_id] || args["person_id"]).to_i, Person)
-    set_foreign_key(@exercise_type_id, (args[:exercise_type_id] || args["exercise_type_id"]).to_i, ExerciseType)
-    set_foreign_key(@duration_id, (args[:duration_id] || args["duration_id"]).to_i, Duration)
-    set_foreign_key(@intensity_id, (args[:intensity_id] || args["intensity_id"]).to_i, Intensity)
+    @person_id = set_foreign_key((args[:person_id] || args["person_id"]).to_i, Person)
+    @exercise_type_id = set_foreign_key((args[:exercise_type_id] || args["exercise_type_id"]).to_i, ExerciseType)
+    @duration_id = set_foreign_key((args[:duration_id] || args["duration_id"]).to_i, Duration)
+    @intensity_id = set_foreign_key((args[:intensity_id] || args["intensity_id"]).to_i, Intensity)
     @errors = []
   end
   
@@ -214,19 +214,19 @@ class ExerciseEvent
   #
   # returns @date
   def set_date(date)  
-    if date.is_a? Integer
-      @date = date
-    elsif !date.blank?
-      @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
-    else
+    begin
+      if date.is_a? Integer
+        @date = date
+      else
+        @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
+      end
+    rescue
       @date = nil
     end
   end
   
-  def set_foreign_key(this_attribute, this_id, name_class)
-    this_attribute = ForeignKey.new(id: this_id, class_name: name_class)
+  def set_foreign_key(this_id, name_class)
+    ForeignKey.new(id: this_id, class_name: name_class)
   end
-  
-  
   
 end
