@@ -82,7 +82,7 @@ class ExerciseEvent
   #
   # returns String
   def to_s
-    "person: #{person}\t\texercise type: #{exercise_type}\t\tdate: #{date}\t\tduration: #{duration}\t\tintensity: #{intensity}"
+    "person: #{person}\t\texercise type: #{exercise_type}\t\tdate: #{date.humanized}\t\tduration: #{duration}\t\tintensity: #{intensity}"
   end
   
   # returns the person's name
