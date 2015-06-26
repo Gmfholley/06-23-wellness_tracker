@@ -232,10 +232,11 @@ module DatabaseConnector
   #
   # returns an Array of Arrays
   def foreign_key_choices
-    foreign_key_choices = []
+    choices = []
     foreign_keys.each do |foreign_key|
-      foreign_key_choices << foreign_key.all_from_class
+      choices << foreign_key.all_from_class
     end
+    choices
   end
   
   # returns an Array of the values of these foreign_keys
