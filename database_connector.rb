@@ -143,6 +143,16 @@ module DatabaseConnector
       self.as_objects(CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize.underscore} WHERE #{field_name} #{relationship} #{field_value};"))
     end
     
+    # returns an integer of the sum field where conditions are met
+    #
+    # returns an Integer
+    def sum_field_where(sum_field, where_field, where_value, where_relationship)
+      if where_value.is_a? String
+        where_value = add_quotes_to_string(where_value)
+      end
+      CONNECTION.execute("SELECT SUM(#{sum_field}) FROM #{self.to_s.pluralize.underscore} WHERE #{where_field} #{where_relationship} #{where_value};").first[0]
+    end
+    
     # returns an Array of Hashes containing the field name information for the table
     #
     # returns an Array
