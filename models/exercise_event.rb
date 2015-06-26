@@ -113,19 +113,25 @@ class ExerciseEvent
     duration_id.get_object
   end
   
+  # returns an ExerciseObject that matches this date, person, and type
+  #
+  # returns an ExerciseObject
+  def this_date_person_and_type
+    rec = CONNECTION.execute("SELECT * FROM #{table} WHERE person_id = #{person.id} AND date = #{date} and exercise_type_id = #{exercise_type.id};").first
+    if rec.blank?
+      ExerciseEvent.new
+    else
+      ExerciseEvent.new(rec)
+    end
+  end
+  
   # returns Boolean to indicate if this date-person-exercise type is a duplicate of a different id in the datbase
   #
   # returns Boolean or id of other id value
   def duplicate_date_person_type?
-    rec = CONNECTION.execute("SELECT * FROM #{table} WHERE person_id = #{person.id} AND date = #{@date} and exercise_type_id = #{exercise_type.id};")
-    if rec.empty?
-      false
-    elsif rec.first["id"] == id
-      false
-    else
-      rec.first["id"]
-    end
+    self.id != this_date_person_and_type.id && this_date_person_and_type.id != ""
   end
+  
   
   # put your business rules here, and it returns Boolean to indicate if it is valid
   #
