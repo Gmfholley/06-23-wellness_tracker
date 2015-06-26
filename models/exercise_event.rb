@@ -5,7 +5,7 @@ class ExerciseEvent
   include DatabaseConnector
   
   attr_accessor
-  attr_reader :id, :errors, :exercise_type_id, :person_id, :duration_id, :intensity_id
+  attr_reader :id, :errors, :exercise_type_id, :person_id, :duration_id, :intensity_id, :date
 
   
   # initializes object
@@ -26,7 +26,11 @@ class ExerciseEvent
     end
 
     date = args["date"] || args[:date]
-    @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
+    if date.is_a? Integer
+      @date = date
+    else
+      @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
+    end
 
     person_id = (args[:person_id] || args["person_id"]).to_i
     @person_id = ForeignKey.new({id: person_id, class_name: Person})
@@ -40,7 +44,7 @@ class ExerciseEvent
     intensity_id = (args[:intensity_id] || args["intensity_id"]).to_i
     @intensity_id = ForeignKey.new({id: intensity_id, class_name: Intensity})
 
-    calculate_points
+    points
 
     @errors = []
   end
@@ -63,10 +67,11 @@ class ExerciseEvent
   
   def date=(new_date)
     @date = Date.strptime(new_date, '%m/%d/%y').to_time.to_i
-  end
+  __END__
   
-  def date
-    Time.at(@date).strftime("%m/%d/%y")
+  
+  def date_humanized
+    Time.at(@date).to_date.strftime("%m/%d/%y")
   end
   
   def points
@@ -112,6 +117,7 @@ class ExerciseEvent
   #
   # returns Boolean or id of other id value
   def duplicate_date_person_type?
+    binding.pry
     rec = CONNECTION.execute("SELECT * FROM #{table} WHERE person_id = #{person.id} AND date = #{@date} and exercise_type_id = #{exercise_type.id};")
     if rec.empty?
       false

@@ -49,7 +49,7 @@ class ExerciseEventTest < Minitest::Test
     assert_equal(9, exercise_event.duration_id.id)
     assert_equal(3, exercise_event.intensity_id.id)
     assert_equal(10, exercise_event.exercise_type.id)
-
+    assert_equal(Fixnum, exercise_event.points.class)
   end
   
   # def test_to_s
@@ -76,16 +76,21 @@ class ExerciseEventTest < Minitest::Test
   end
   
   
- #
- #  def test_location_times
- #    m = ExerciseEvent.new("id" => 1, "name" => "Wendy", "description" => "In a world!", "rating_id" => 1,
- #    "studio_id" => 1, "length" => 1)
- #    assert_equal(Array, m.location_times.class)
- #
- #    m = ExerciseEvent.create_from_database(1)
- #    assert_equal(LocationTime, m.location_times.first.class)
- #  end
- #
+
+  def test_duplicate_date_person_type
+    m = ExerciseEvent.create_from_database(1)
+    
+    assert_equal(false, m.duplicate_date_person_type?)
+
+    m.exercise_type_id = 2
+    
+    assert_equal(false, m.duplicate_date_person_type?)
+    n= ExerciseEvent.new(date: m.date, person_id: m.person_id.id, intensity_id: m.intensity_id.id, 
+    duration_id: m.duration_id.id, exercise_type_id: m.exercise_type_id.id)
+    
+    assert_equal(true, n.duplicate_date_person_type?)
+  end
+
  #
  #  def test_valid
  #    # Can't be nil
