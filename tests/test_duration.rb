@@ -24,12 +24,13 @@ class DurationTest < Minitest::Test
 
   end
     
-  # TODO - add this test back when I have ExerciseEvents working  
-  # # tests true above in crud
-  # def test_ok_to_delete
-  #   assert_equal(false, Duration.ok_to_delete?(3))
-  # end
-  #
+  # tests true above in crud
+  def test_ok_to_delete
+    assert_equal(false, Duration.ok_to_delete?(1))
+    assert_equal(true, Duration.ok_to_delete?(0))
+    assert_equal(true, Duration.ok_to_delete?(Duration.all.last.id + 10))
+  end
+
   def test_valid
     # Can't be nil
     p = Duration.new(name: nil, num_quarter_hours: nil)
