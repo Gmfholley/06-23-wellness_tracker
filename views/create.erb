@@ -38,7 +38,7 @@
   <!--Show all foreign keys in a select field -->
   <% @m.foreign_key_fields.each_with_index do |foreign_key, x| %>
     <p><label for="<%= foreign_key %>">Select your <%= foreign_key %>:</label><select name = <%= foreign_key %>>
-      <% @m.foreign_key_choices[x].each do |choice| %>
+      <% @foreign_key_choices[x].each do |choice| %>
         <option value = <%= choice.id %>
           <% if @m.send(foreign_key).id == choice.id %>
             selected
