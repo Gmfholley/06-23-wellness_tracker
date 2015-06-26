@@ -4,7 +4,6 @@ require 'date'
 class ExerciseEvent
   include DatabaseConnector
   
-  attr_accessor
   attr_reader :id, :errors, :exercise_type_id, :person_id, :duration_id, :intensity_id, :date
 
   
@@ -30,6 +29,8 @@ class ExerciseEvent
       @date = date
     elsif !date.blank?
       @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
+    else
+      @date = nil
     end
 
     person_id = (args[:person_id] || args["person_id"]).to_i
