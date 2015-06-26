@@ -94,4 +94,16 @@ date                | Integer NOT NULL
 `duration_id`       | Integer FOREIGN KEY NOT NULL
 points              | Integer DEFAULT 0
 
+Wellness Period
+id
+starting
+ending
+rules somehow (methods)
+
+
+(starting and ending dates)
+
+
+
+
 Within the Exercise Event table, the combination of `user_id`, `exercise_type` and date should be unique.
