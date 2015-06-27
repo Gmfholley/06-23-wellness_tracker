@@ -7,20 +7,12 @@ require 'active_support/inflector.rb'
 # =>     would allow omposite keys to be handled by this module too, instead of being treated as an edge 
 # =>     case
 #
+# TODO - consider doing more with run_sql statements and somehow managing their return, especially
+#       in class SQL calls where there is no object to attach this to
 
 module DatabaseConnector
   
   module ClassDatabaseConnector    
-    # connects to the database
-    #
-    # database_name    - String representing the database name (and relative path)
-    #
-    # returns Object representing the database CONNECTION 
-    # def connection_to_database(database_name)
-    #   CONNECTION = SQLite3::Database.new(database_name)
-    #   CONNECTION.results_as_hash = true
-    # end
-
     # creates a table with field names and types as provided
     #
     # field_names_and_types   - Array of the column names
@@ -41,15 +33,29 @@ module DatabaseConnector
     #
     # returns String
     def create_string_of_field_names_and_types(field_names_and_types)
+      add_commas_to_types(field_names_and_types)
+      add_primary_key_type_to_first_element(field_names_and_types)
+      field_names_and_types.join(" ")
+    end
+    
+    # utility method for create_string_of_field_names_and_types
+    #
+    # adds commas to the second dimension of the array
+    def add_commas_to_types(field_names_and_types)
       field_names_and_types.each do |array|
         array[1] = array[1].upcase + ","
       end
+    end
+    
+    # utility method for create_string_of_field_names_and_types
+    #
+    # adds commas to the second dimension of the array
+    def add_primary_key_type_to_first_element(field_names_and_types)
       if !field_names_and_types.first[1].include?("PRIMARY KEY")
         field_names_and_types.first[1] = field_names_and_types.first[1].remove(/,/) + " PRIMARY KEY,"
       end
-      field_names_and_types.join(" ")
     end
-  
+    
     ####### NOTE: THIS METHOD DOES NOT WORK BECAUSE YOU CANNOT GET THE FIELDNAMES
     # # creates a new record in the table
     # #
@@ -128,7 +134,7 @@ module DatabaseConnector
       end
       as_object
     end
-    
+
     # retrieves all records in this table where field name and field value have this relationship
     #
     # fieldname       - String of the field name in this table
@@ -137,25 +143,24 @@ module DatabaseConnector
     #
     # returns an Array of hashes
     def where_match(field_name, field_value, relationship)
-      if field_value.is_a? String
-        field_value = add_quotes_to_string(field_value)
-      end
-      self.as_objects(CONNECTION.execute("SELECT * FROM #{table_name} WHERE #{field_name} #{relationship} #{field_value};"))
+      self.as_objects(CONNECTION.execute("SELECT * FROM #{table_name} WHERE #{field_name} #{relationship} #{add_quotes_if_string(field_value)};"))
     end
     
     # returns an integer of the sum field where conditions are met
     #
     # returns an Integer or an error message
     def sum_field_where(sum_field, where_field, where_value, where_relationship)
-      if where_value.is_a? String
-        where_value = add_quotes_to_string(where_value)
-      end
-      result = run_sql("SELECT SUM(#{sum_field}) FROM #{table_name} WHERE #{where_field} #{where_relationship} #{where_value};")
-      
+      result = run_sql("SELECT SUM(#{sum_field}) FROM #{table_name} WHERE #{where_field} #{where_relationship} #{add_quotes_if_string(where_value)};")
       if result.is_a? Array
         result.first[0]
       else
         result
+      end
+    end
+    
+    def add_quotes_if_string(value)
+      if value.is_a? String
+        value = add_quotes_to_string(value)
       end
     end
     
@@ -226,10 +231,31 @@ module DatabaseConnector
   # returns an Array of the database_field_names for SQL
   def database_field_names
     attributes = instance_variables.collect{|a| a.to_s.gsub(/@/,'')}
-    attributes.delete("id")
-    attributes.delete("errors")
+    delete_from_array(attributes, attributes_that_should_not_be_in_database_field_names)
     attributes
   end
+  
+  # deletes the delete_array from array
+  #
+  # array         - Array that should have elements deleted from it
+  # delete_array  - Array that has elements that should be deleted from array
+  #
+  # returns Array
+  def delete_from_array(array, delete_array)
+    delete_array.each do |a|
+      array.delete(a)
+    end
+    array
+  end
+  
+  
+  # Array of the attributes names that should not be included
+  #
+  # Array
+  def attributes_that_should_not_be_in_database_field_names
+    ["id", "errors"]
+  end
+  
   
   #string of field names
   def string_field_names
@@ -298,15 +324,26 @@ module DatabaseConnector
   def self_values
     self_values = []
     database_field_names.each do |param| 
-      val = self.send(param)
-      if val.is_a? ForeignKey
-        self_values << val.id
-      else
-        self_values << val
-      end
+      self_values << get_value_including_foreign_keys(self.send(param))
     end
     self_values
   end
+  
+  # returns either the value or the id, if a def ForeignKey
+  #
+  # value - value of object
+  #
+  # returns value or id of ForeignKey
+  def get_value_including_foreign_keys(value)
+    if value.is_a? ForeignKey
+      value.id
+    else
+      value
+    end
+  end
+  
+  
+  
   
   def quoted_string_self_values
     vals = []
