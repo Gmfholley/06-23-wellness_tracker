@@ -158,18 +158,23 @@ module DatabaseConnector
       end
     end
     
-    def add_quotes_if_string(value)
-      if value.is_a? String
-        value = add_quotes_to_string(value)
-      end
-    end
-    
     # returns an Array of Hashes containing the field name information for the table
     #
     # returns an Array or false if SQL error
     def get_table_info
       run_sql("PRAGMA table_info(#{table_name});")
     end
+    
+    # if the value is a string, adds quotes
+    #
+    # returns value
+    def add_quotes_if_string(value)
+      if value.is_a? String
+        value = add_quotes_to_string(value)
+      end
+      value
+    end
+    
     # adds '' quotes around a string for SQL statement
     #
     # Example: 
@@ -342,17 +347,13 @@ module DatabaseConnector
     end
   end
   
-  
-  
-  
+  # returns this object's values as a string, with quotes if the object is a string
+  #
+  # returns String
   def quoted_string_self_values
     vals = []
     self_values.each do |x|
-      if x.is_a? String
-        vals << add_quotes_to_string(x)
-      else
-        vals << x
-      end
+      vals << self.class.add_quotes_if_string(x)
     end
     vals
   end
@@ -360,7 +361,6 @@ module DatabaseConnector
   # string of this object's parameters for SQL
   def stringify_self
     self_values.to_s[1...-1]
-    #self_values.join(', ')
   end
   
   # string of the object's parameters = to their values
@@ -478,8 +478,7 @@ module DatabaseConnector
   # updates all values (except ID) in the record
   #
   # returns false if not saved
-  def update_record
-    
+  def update_record 
     if valid? && exists?
       query_string = "UPDATE #{table} SET #{parameters_and_values_sql_string} WHERE id = #{@id};"
       run_sql(query_string)
@@ -496,11 +495,8 @@ module DatabaseConnector
   #
   # returns fales if not saved
   def update_field(change_field, change_value)
-    if change_value.is_a? String
-      change_value = add_quotes_to_string(change_value)
-    end
     if valid?
-      run_sql("UPDATE #{table} SET #{change_field} = #{change_value} WHERE id = #{@id};")
+      run_sql("UPDATE #{table} SET #{change_field} = #{self.class.add_quotes_if_string(change_value)} WHERE id = #{@id};")
     else
       false
     end
@@ -525,20 +521,6 @@ module DatabaseConnector
   # returns Array of class_name objects
   def where_this_parameter_in_another_table(class_name, this_parameter, other_field_name)
     class_name.where_match(other_field_name, this_parameter, "==")
-  end
-  
-  # adds '' quotes around a string for SQL statement
-  #
-  # Example: 
-  #
-  #        text
-  #     => 'text'
-  # 
-  # string  - String
-  #
-  # returns a String
-  def add_quotes_to_string(string)
-    string = "'#{string}'"
   end
   
   # intended to run SQL string and rescues any errors
