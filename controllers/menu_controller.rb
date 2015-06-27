@@ -1,5 +1,12 @@
 module MenuController
   
+  # This module creates html for each MenuItem for my menu.erb file
+  #     Given a Menu object, this module will generate html to show each MenuItem in a html List
+  #     These methods also allows you to surround the MenuItem in html with links or not
+  ##################################################  
+  
+  
+  
   # returns html as a list for all menu items
   #
   # menu        - Menu object that you are working with
@@ -14,7 +21,6 @@ module MenuController
     html.join
   end
   
-  
   # returns the line of html for this item
   #
   # item      - MenuItem type
@@ -23,9 +29,15 @@ module MenuController
   # returns string of html
   def html_line(item, links)
     if links
-      "<li><a href = /#{item.method.method_name}>#{item.user_message}</a></li>"
+      "<li>
+        <a href = /#{item.method.method_name}>
+          #{item.user_message}
+        </a>
+      </li>"
     else
-      "<li>#{item.user_message}</li>"
+      "<li>
+        #{item.user_message}
+      </li>"
     end
   end
 
