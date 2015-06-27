@@ -6,8 +6,8 @@ class ExerciseType
   include DatabaseConnector
   
   # duration - length
-  attr_reader :id, :errors
-  attr_accessor :name, :point_base
+  attr_reader :id, :errors, :point_base
+  attr_accessor :name
   
   
   # initializes a ExerciseType id
@@ -19,15 +19,22 @@ class ExerciseType
   #
   # returns an instance of the object
   def initialize(args={})
-    if args["id"].blank?
-      @id =  ""
-    else
-      @id = args["id"].to_i
-    end
+    @id = args["id"]
     @name = args[:name] || args["name"]
-    @point_base = (args[:point_base] || args["point_base"]).to_i
+    @point_base = args[:point_base] || args["point_base"]
     @errors = []
+    post_initialize
   end
+  
+  # setter method for point_base that sets it to integer if not already
+  #
+  # returns point_base
+  def point_base=(new_point_base)
+    @point_base = new_point_base
+    post_initialize
+    @point_base
+  end
+  
   
   def to_s
     "id: #{id}\t\tname: #{name}"
