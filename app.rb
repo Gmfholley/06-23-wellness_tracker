@@ -27,11 +27,14 @@ require_relative 'models/exercise_event.rb'
 
 
 require_relative 'controllers/defined_menus.rb'
+require_relative 'controllers/menu_controller.rb'
 
-helpers DefinedMenus
+
+helpers DefinedMenus, MenuController
 
 get "/home" do
   @menu = home_menu
+  @with_links = true
   erb :menu
 end
 
@@ -46,6 +49,7 @@ get "/:class_name" do
   else
   
     @menu = crud_menu(@class_name)
+    @with_links = true
     erb :menu
   end
 end
@@ -61,10 +65,12 @@ get "/:class_name/:action" do
   case params["action"]
   when "update", "delete"
     @menu = object_menu(@class_name, params["action"])
+    @with_links = true
     erb :menu
   when "show"
     @menu = object_menu(@class_name, params["action"])
-    erb :menu_without_links
+    @links = false
+    erb :menu
   when "create"
     # create an object so you can get its instance variables
     @m = @class_name.new
@@ -85,7 +91,8 @@ get "/:class_name/:action" do
     if @m.save_record
       @message = "Successfully saved!"
       @menu = object_menu(@class_name, "show")
-      erb :menu_without_links
+      @links = false
+      erb :menu
     else 
       if @class_name == ExerciseEvent
         erb :create_exercise_event
@@ -118,11 +125,13 @@ get "/:class_name/:action/:x" do
     if @class_name.delete_record(params["x"].to_i)
       @message = "Successfully deleted."
       @menu = object_menu(@class_name, "show")
-      erb :menu_without_links
+      @links = false
+      erb :menu
     else
       @message = "This #{@class_name} was not found or was in another table.  Not deleted."
       @menu = object_menu(@class_name, "show")
-      erb :menu_without_links
+      @links = false
+      erb :menu
     end
   else
     erb :not_appearing
