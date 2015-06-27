@@ -464,6 +464,7 @@ module DatabaseConnector
   def check_field_value_matches_data_type(field_info, field)
     check_null(field_info, field)
     check_integer(field_info, field)
+    check_real(field_info, field)
     @errors
   end
   
@@ -491,6 +492,18 @@ module DatabaseConnector
     end
   end
   
+  # checks null and if so, adds an error message
+  #
+  # field_info - Hash of table parameters
+  # field      - Attribute
+  #
+  # returns Boolean
+  def check_real(field_info, field)
+    if should_be_float?(field_info, field) && !float?(field)
+      add_float_message_to_errors(field)
+    end
+  end
+  
   # checks if field is null and should not be
   #
   # field_info - Hash of table parameters
@@ -510,7 +523,7 @@ module DatabaseConnector
     @errors << {message: "#{field} must not be blank.", variable: "#{field}"}
   end
   
-  # checks if field is null and should not be
+  # checks if field is an Integer
   #
   # field_info - Hash of table parameters
   # field      - Attribute
@@ -527,7 +540,6 @@ module DatabaseConnector
   #
   # returns Boolean
   def integer?(field)
-    
     self.send(field).is_a? Integer
   end
   
@@ -540,6 +552,35 @@ module DatabaseConnector
     @errors << {message: "#{field} must be an Integer.", variable: "#{field}"}
   end
   
+  # checks if field is an Integer
+  #
+  # field_info - Hash of table parameters
+  # field      - Attribute
+  #
+  # returns Boolean
+  def should_be_float?(field_info, field)
+    field_info["type"] == "REAL"
+  end
+  
+  # checks if field is null and should not be
+  #
+  # field_info - Hash of table parameters
+  # field      - Attribute
+  #
+  # returns Boolean
+  def float?(field)
+    self.send(field).is_a? Float
+  end
+  
+  # adds integer error to errors array for field
+  #
+  # field - Attribute
+  #
+  # returns Hash of error message
+  def add_float_message_to_errors(field)
+    @errors << {message: "#{field} must be an Float.", variable: "#{field}"}
+  end
+  
   # checks if this object has been saved to the database yet
   #
   # returns Boolean
@@ -548,10 +589,12 @@ module DatabaseConnector
   end
   
   # meant to be written over in each class with a valid method
+  # default method just checks database field requirements vs. what the type is (NULL, integers)
   #
   # returns Boolean
   def valid?
-    true
+    validate_field_types
+    @errors.length == 0
   end
   
   # creates a new record in the table for this object
