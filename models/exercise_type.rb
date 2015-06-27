@@ -58,22 +58,13 @@ class ExerciseType
   # returns Boolean
   def valid?
     @errors = []
-    # check thename exists and is not empty
-    if name.to_s.empty?
-      @errors << {message: "Name cannot be empty.", variable: "name"}
-    end
+    validate_field_types
     
-    # checks the point base
-    if point_base.to_s.empty?
-      @errors << {message: "Point base cannot be empty.", variable: "point_base"}
-    elsif point_base.is_a? Integer
+    if integer?("point_base")
       if point_base < 1
         @errors << {message: "Point base must be greater than 0.", variable: "point_base"}
       end
-    else
-      @errors << {message: "Point base must be a number.", variable: "point_base"}
     end
-    
     @errors.empty?
   end
   

@@ -36,17 +36,17 @@ class ExerciseTypeTest < Minitest::Test
     # Can't be nil
     p = ExerciseType.new(name: nil, point_base: nil)
     p.valid?
-    assert_equal(2, p.errors.length)
+    assert_equal(3, p.errors.length)
     
     # can't be empty strings
     p = ExerciseType.new(name: "", point_base: nil)    
     p.valid?
-    assert_equal(2, p.errors.length)
+    assert_equal(3, p.errors.length)
     
     # can't be whatever is created when no args are passed
     p = ExerciseType.new()
     p.valid?
-    assert_equal(2, p.errors.length)
+    assert_equal(3, p.errors.length)
     
     # num_quarter_hours can't be a string
     p = ExerciseType.new(name: "s", point_base: "s")    

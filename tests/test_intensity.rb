@@ -38,17 +38,17 @@ class IntensityTest < Minitest::Test
     # Can't be nil
     p = Intensity.new(name: nil, point_adjustment: nil)
     p.valid?
-    assert_equal(2, p.errors.length)
+    assert_equal(3, p.errors.length)
     
     # can't be empty strings
     p = Intensity.new(name: "", point_adjustment: nil)    
     p.valid?
-    assert_equal(2, p.errors.length)
+    assert_equal(3, p.errors.length)
     
     # can't be whatever is created when no args are passed
     p = Intensity.new()
     p.valid?
-    assert_equal(2, p.errors.length)
+    assert_equal(3, p.errors.length)
     
     # point_adjustment can't be a string
     p = Intensity.new(name: "s", point_adjustment: "s")    

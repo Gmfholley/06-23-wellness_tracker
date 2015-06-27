@@ -66,23 +66,15 @@ class Intensity
   #
   # returns Boolean
   def valid?
-    @errors = []
-    # check thename exists and is not empty
-    if name.to_s.empty?
-      @errors << {message: "Name cannot be empty.", variable: "name"}
-    end
+    @errors = []    
+    validate_field_types
     
-    # checks the number of quarter hours
-    if point_adjustment.to_s.empty?
-      @errors << {message: "Point adjustment cannot be empty.", variable: "point_adjustment"}
-    elsif point_adjustment.is_a? Integer
+    if integer?("point_adjustment")
       if point_adjustment < 1
         @errors << {message: "Point adjustment must be greater than 0.", variable: "point_adjustment"}
       end
-    else
-      @errors << {message: "Point adjustment must be a number.", variable: "point_adjustment"}
     end
-    
+
     @errors.empty?
   end
   

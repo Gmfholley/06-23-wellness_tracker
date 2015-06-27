@@ -35,17 +35,17 @@ class DurationTest < Minitest::Test
     # Can't be nil
     p = Duration.new(name: nil, num_quarter_hours: nil)
     p.valid?
-    assert_equal(2, p.errors.length)
+    assert_equal(3, p.errors.length)
     
     # can't be empty strings
     p = Duration.new(name: "", num_quarter_hours: nil)    
     p.valid?
-    assert_equal(2, p.errors.length)
+    assert_equal(3, p.errors.length)
     
     # can't be whatever is created when no args are passed
     p = Duration.new()
     p.valid?
-    assert_equal(2, p.errors.length)
+    assert_equal(3, p.errors.length)
     
     # num_quarter_hours can't be a string
     p = Duration.new(name: "s", num_quarter_hours: "s")    

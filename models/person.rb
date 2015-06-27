@@ -66,10 +66,7 @@ class Person
   # returns Boolean
   def valid?
     @errors = []
-    # check thename exists and is not empty
-    if name.to_s.empty?
-      @errors << {message: "Name cannot be empty.", variable: "name"}
-    end
+    validate_field_types
     @errors.empty?
   end
   

@@ -56,20 +56,14 @@ class Duration
   # returns Boolean
   def valid?
     @errors = []
-    # check thename exists and is not empty
-    if name.to_s.empty?
-      @errors << {message: "Name cannot be empty.", variable: "name"}
-    end
     
-    # checks the number of quarter hours
-    if num_quarter_hours.to_s.empty?
-      @errors << {message: "Number of quarter hours cannot be empty.", variable: "num_quarter_hours"}
-    elsif num_quarter_hours.is_a? Integer
+    # checks each field type and adds error messages if it does not meet requirements from the table
+    validate_field_types
+    
+    if integer?("num_quarter_hours")
       if num_quarter_hours < 1
         @errors << {message: "Number of quarter hours must be greater than 0.", variable: "num_quarter_hours"}
       end
-    else
-      @errors << {message: "Number of quarter hours must be a number.", variable: "num_quarter_hours"}
     end
     
     @errors.empty?
