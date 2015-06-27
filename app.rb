@@ -105,17 +105,16 @@ end
 get "/:class_name/:action/:x" do
   @class_name = menu_to_class_name[params["class_name"]]
   
-  if params["action"] == "update"
+  case params["action"]
+  when "update"
     @m = @class_name.create_from_database(params["x"].to_i)
     @foreign_key_choices = @m.foreign_key_choices
     if @class_name == ExerciseEvent
-     erb :create_exercise_event
-   else 
-    erb :create
-  end
-    
-  elsif params["action"] == "delete"
-    
+      erb :create_exercise_event
+    else 
+      erb :create
+    end
+  when "delete"
     if @class_name.delete_record(params["x"].to_i)
       @message = "Successfully deleted."
       @menu = object_menu(@class_name, "show")
@@ -125,7 +124,6 @@ get "/:class_name/:action/:x" do
       @menu = object_menu(@class_name, "show")
       erb :menu_without_links
     end
-    
   else
     erb :not_appearing
   end
