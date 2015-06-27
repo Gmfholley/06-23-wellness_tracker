@@ -151,6 +151,7 @@ module DatabaseConnector
         where_value = add_quotes_to_string(where_value)
       end
       result = run_sql("SELECT SUM(#{sum_field}) FROM #{table_name} WHERE #{where_field} #{where_relationship} #{where_value};")
+      
       if result.is_a? Array
         result.first[0]
       else
@@ -228,13 +229,6 @@ module DatabaseConnector
     attributes.delete("id")
     attributes.delete("errors")
     attributes
-    # attributes = []
-    # instance_variables.each do |i|
-    #   unless i == "@id".to_sym
-    #     attributes << i.to_s.delete("@")
-    #   end
-    # end
-    # attributes
   end
   
   #string of field names
@@ -358,8 +352,8 @@ module DatabaseConnector
   #
   # returns Boolean
   def exists?
-    rec = run_sql("SELECT * FROM #{table} WHERE id = #{@id};").first
-    if rec.nil?
+    rec = run_sql("SELECT * FROM #{table} WHERE id = #{@id};")
+    if rec.empty?
       @errors << "That id does not exist in the table."
       false
     else
@@ -377,11 +371,16 @@ module DatabaseConnector
   end
   
   
-  # initializes id to an integer if not blank
+  # initializes id to an integer or empty string if blank
+  #
+  # NOTE: you want to keep a blank @id an empty String because if you do not then you get SQL errors
+  # an empty string for @id returns an empty Array, which can be returned as an empty Object.  Win/win
   #
   # returns @id
   def initialize_id
-    unless @id.blank?
+    if @id.blank?
+      @id = ""
+    else
       @id = @id.to_i
     end
   end
@@ -413,7 +412,7 @@ module DatabaseConnector
   #
   # returns Boolean
   def saved_already?
-    @id != ""
+    @id != "" && @id != nil
   end
   
   # meant to be written over in each class with a valid method
@@ -427,7 +426,6 @@ module DatabaseConnector
   #
   # returns Integer or false
   def save_record
-    
     if !saved_already?
       if valid?
         run_sql("INSERT INTO #{table} (#{string_field_names}) VALUES (#{stringify_self});")
