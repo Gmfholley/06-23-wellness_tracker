@@ -88,7 +88,11 @@ class ExerciseEvent
   #
   # returns String
   def date_humanized
-    Time.at(@date).to_date.strftime("%m/%d/%y")
+    begin
+      Time.at(@date).to_date.strftime("%m/%d/%y")
+    rescue
+      nil
+    end
   end
   
   # calculates and sets the points
