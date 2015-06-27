@@ -150,7 +150,12 @@ module DatabaseConnector
       if where_value.is_a? String
         where_value = add_quotes_to_string(where_value)
       end
-      run_sql("SELECT SUM(#{sum_field}) FROM #{table_name} WHERE #{where_field} #{where_relationship} #{where_value};").first[0]
+      result = run_sql("SELECT SUM(#{sum_field}) FROM #{table_name} WHERE #{where_field} #{where_relationship} #{where_value};")
+      if result.is_a? Array
+        result.first[0]
+      else
+        result
+      end
     end
     
     # returns an Array of Hashes containing the field name information for the table
@@ -173,8 +178,24 @@ module DatabaseConnector
       string = "'#{string}'"
     end
     
+    # returns a String
+    #
+    # returns String
     def table_name
       self.to_s.pluralize.underscore
+    end
+    
+    # intended to run SQL string and rescues any errors
+    #
+    # sql_query - String of the SQL query
+    #
+    # returns Array of SQL result or False if SQL error
+    def run_sql(sql_query)
+      begin
+        CONNECTION.execute(sql_query)
+      rescue Exception => msg
+        msg
+      end
     end
     
   end
@@ -198,7 +219,7 @@ module DatabaseConnector
   
   # returns the table name - the plural of the object's class
   def table
-    self.table_name
+    self.class.table_name
   end
   
   # returns an Array of the database_field_names for SQL
