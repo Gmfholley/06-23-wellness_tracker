@@ -95,7 +95,11 @@ class ExerciseEvent
   #
   # returns an Integer (defaults to 0)
   def points
-    @points = exercise_type.point_base * duration.num_quarter_hours * intensity.point_adjustment
+    begin
+      @points = exercise_type.point_base * duration.num_quarter_hours * intensity.point_adjustment
+    rescue
+      0
+    end
   end
   
   # returns String representing this object's parameters
