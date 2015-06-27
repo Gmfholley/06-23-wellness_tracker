@@ -6,9 +6,8 @@ class Duration
   include DatabaseConnector
   
   # duration - length
-  attr_reader :id, :errors
-  attr_accessor :name, :num_quarter_hours
-  
+  attr_reader :id, :errors, :num_quarter_hours
+  attr_accessor :name
   
   # initializes a Duration id
   #
@@ -19,14 +18,19 @@ class Duration
   #
   # returns an instance of the object
   def initialize(args={})
-    if args["id"].blank?
-      @id =  ""
-    else
-      @id = args["id"].to_i
-    end
+    @id = args["id"]
     @name = args[:name] || args["name"]
-    @num_quarter_hours = (args[:num_quarter_hours] || args["num_quarter_hours"]).to_i
+    @num_quarter_hours = args[:num_quarter_hours] || args["num_quarter_hours"]
     @errors = []
+    post_initialize
+  end
+  
+  # setter method for num_quarter_hours that runs post_initialize method to set the correct ints
+  #
+  # returns num_quarter_hours
+  def num_quarter_hours=(new_quarter_hours)
+    @num_quarter_hours = new_quarter_hours
+    post_initialize
   end
   
   def to_s
