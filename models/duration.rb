@@ -31,6 +31,7 @@ class Duration
   def num_quarter_hours=(new_quarter_hours)
     @num_quarter_hours = new_quarter_hours
     post_initialize
+    @num_quarter_hours
   end
   
   def to_s
