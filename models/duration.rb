@@ -60,6 +60,7 @@ class Duration
     # checks each field type and adds error messages if it does not meet requirements from the table
     validate_field_types
     
+    
     if integer?("num_quarter_hours")
       if num_quarter_hours < 1
         @errors << {message: "Number of quarter hours must be greater than 0.", variable: "num_quarter_hours"}
