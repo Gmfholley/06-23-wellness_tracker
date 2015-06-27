@@ -4,6 +4,10 @@ require 'date'
 class ExerciseEvent
   include DatabaseConnector
   
+  
+  # TODO - Because of the foreign keys and dates, do not run post_initialize on this method
+  # but consider doing it sometime in future
+  
   attr_reader :id, :errors, :exercise_type_id, :person_id, :duration_id, :intensity_id, :date
   
   # initializes object
