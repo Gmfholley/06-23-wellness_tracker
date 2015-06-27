@@ -7,6 +7,7 @@
   <a href = "../../<%= params["class_name"] %> "><%=params["class_name"] %></a>
 </header>
 <body>
+  <p><%= @message %></p>
 <h1><%=@menu.title%></h1>
  <ul>
    <%= get_list_html_for_all_menu_items(@menu, @with_links) %>
