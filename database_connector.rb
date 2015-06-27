@@ -439,7 +439,7 @@ module DatabaseConnector
   #
   # returns the field value
   def update_field_value_to_correct_date_type(field_info, field)
-    if field_info["type"] == "INTEGER"
+    if field_info["type"] == "INTEGER" && !self.send(field).blank?
       int = self.send(field).to_i
       self.instance_variable_set("@#{field}".to_sym, int)
     end
