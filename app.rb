@@ -12,6 +12,8 @@ require 'active_support/inflector.rb'
 require_relative 'database_connector.rb'
 require_relative 'database_setup.rb'
 require_relative 'foreign_key.rb'
+
+
 require_relative 'views/menu.rb'
 require_relative 'views/menu_item.rb'
 require_relative 'views/method_to_call.rb'
@@ -28,9 +30,10 @@ require_relative 'models/exercise_event.rb'
 
 require_relative 'controllers/defined_menus.rb'
 require_relative 'controllers/menu_controller.rb'
+require_relative 'controllers/create_controller.rb'
 
 
-helpers DefinedMenus, MenuController
+helpers DefinedMenus, MenuController, CreateController
 
 get "/home" do
   @menu = home_menu
@@ -74,16 +77,14 @@ get "/:class_name/:action" do
   when "create"
     # create an object so you can get its instance variables
     @m = @class_name.new
-    @foreign_key_choices = @m.foreign_key_choices
+    @date_array = []
     
     if @class_name == ExerciseEvent
-      @m.date = Time.now.strftime("%m/%d/%y")
-      erb :create_exercise_event
-    else
-      erb :create
+      @date_array = ["date"]
     end
-    
+    erb :create
   when "submit"
+    
     @class_name = menu_to_class_name[params["class_name"]]
     @m = @class_name.new(params["create_form"])
     @foreign_key_choices = @m.foreign_key_choices
@@ -94,13 +95,12 @@ get "/:class_name/:action" do
       @links = false
       erb :menu
     else 
+      @date_array = []
       if @class_name == ExerciseEvent
-        erb :create_exercise_event
-      else
-        erb :create
+        @date_array = ["date"]
       end
+      erb :create
     end
-    
   else
     erb :not_appearing
   end
@@ -115,12 +115,11 @@ get "/:class_name/:action/:x" do
   case params["action"]
   when "update"
     @m = @class_name.create_from_database(params["x"].to_i)
-    @foreign_key_choices = @m.foreign_key_choices
+    @date_array = []
     if @class_name == ExerciseEvent
-      erb :create_exercise_event
-    else 
-      erb :create
+      @date_array = ["date"]
     end
+    erb :create
   when "delete"
     if @class_name.delete_record(params["x"].to_i)
       @message = "Successfully deleted."
@@ -141,26 +140,4 @@ end
 
 get "/:not_listed" do
   erb :not_appearing
-end
-
-
-
-# LookUp Hash for the menu item to the class name
-#
-# Hash
-def menu_to_class_name
-  {"person" => Person, "duration" => Duration, "intensity" => Intensity, "exercise_type" => ExerciseType, "exercise_event" => ExerciseEvent}
-end
-
-def menu_title(class_name, action)
-  if action == "show"
-  end
-end
-
-def menu_title_all_but_show(class_string, action)
-  "Which #{class_string} do you want to #{action}?"
-end
-
-def menu_title_show(class_string)
-  "Here are all the #{class_string.pluralize}."
 end

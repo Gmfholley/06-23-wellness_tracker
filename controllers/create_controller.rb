@@ -13,7 +13,27 @@ module CreateController
   #   Note: all field names are stored in a Hash called 'create_form'
   
   
+################
+# html for non-foreign key select fields
+###############  
+  def get_list_html_for_errors(object)
+    html = []
+    object.errors.each do |error|
+      html <<
+      "<p>
+        <em>
+          Error with #{error[:variable]}: #{error[:message]}
+        </em>
+      </p>"
+    end
+    html.join
+  end
   
+  # <% unless @m.errors.nil? %>
+  #   <% @m.errors.each do |error|   %>
+  #       <p><em>Error with <%= error[:variable] %>: <%= error[:message] %></em></p>
+  #   <% end %>
+  # <% end %>
   
 ################
 # html for non-foreign key select fields
@@ -22,32 +42,79 @@ module CreateController
   def get_list_html_for_non_foreign_key_fields(object)
     html = []
     object.non_foreign_key_fields.each do |field|
-      html <<
-        "<p>
-          <label for = '#{field}' >
-            Select your #{field}:
-          </label>
-          <input type = 'text' 
-            name = create_form[#{field}]
-            placeholder = 'Type in the #{field}'
-            value = '#{object.send(field)}'>
-          </input>
-        </p>"
+      html << html_for_non_date_field(object, field)
     end
     html.join
   end
   
+  # gets html for non_foreign_key fields and date fields for anything in dates array
+  #
+  # object - Object
+  # dates - Array of field names that are dates
+  #
+  # returns a String of html
+  def get_list_html_for_non_foreign_key_fields_plus_special_date(object, dates)
+    html = []
+    object.non_foreign_key_fields.each do |field|
+      if dates.include?(field)
+        html << html_for_date_field(object, field)
+      else
+        html << html_for_non_date_field(object, field)
+      end
+    end
+    html.join
+  end
+  
+  # string of html of non-date field 
+  def html_for_non_date_field(object, field)
+    "<p>
+      <label for = '#{field}' >
+        Select your #{field}:
+      </label>
+      <input type = 'text' 
+        name = create_form[#{field}]
+        placeholder = 'Type in the #{field}'
+        value = '#{object.send(field)}'>
+      </input>
+    </p>"
+  end
   
   
-# <% @m.non_foreign_key_fields.each do |field| %>
-#   <p>
-#     <label for = "<%= field %> ">
-#       Select your <%= field %>:
-#     </label>
-#     <input type= "text" name = create_form[<%= field %>] field placeholder= "Type in the <%= field %>" value = "<%= @m.send(field) %>" >
-#     </input>
-#   </p>
-# <% end %>
+  # string of html for date field
+  def html_for_date_field(object, field)
+    "<p>
+      <label for = '#{field}' >
+        Select your #{field}:
+      </label>
+      <input type = 'date' 
+        name = create_form[#{field}]
+        placeholder = 'mm/dd/yy'
+        value = '#{date_humanized(object.send(field))}'>
+      </input>
+    </p>"
+  end
+  
+  # returns the date as integer in mm/dd/yy form
+  #
+  # returns a String
+  def date_humanized(date_as_integer)
+    begin
+      Time.at(date_as_integer).to_date.strftime("%m/%d/%y")
+    rescue
+      nil
+    end
+  end
+  
+  #
+  # <p>
+  #   <label for = "<%= field %> ">Select your <%= field %>:
+  #   </label>
+  #   <input type= "date" name = create_form[<%= field %>] field placeholder= "mm/dd/yy" value = "<%= @m.date_humanized %>" >
+  #   </input>
+  # </p>
+  
+  
+  
   
 ################
 # html for Foreign Key select drop downs
@@ -82,7 +149,7 @@ module CreateController
       html <<
       "<option value = #{choice.id} 
         #{is_selected_html?(object, foreign_key, choice)}>
-        choice.name
+        #{choice.name}
        </option>"
     end
     html.join

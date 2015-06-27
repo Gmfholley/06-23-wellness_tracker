@@ -6,7 +6,6 @@
 <! @non_foreign_key_fields - An Array of the field names of non-foreign keys. >
 <!-- >
 
-<!-- <body> -->
 
 <header>
   <a href = "/home">home </a>
@@ -17,20 +16,16 @@
 <body>
   
   <!--Show error messages -->
-  <% unless @m.errors.nil? %>
-    <% @m.errors.each do |error|   %>
-        <p><em>Error with <%= error[:variable] %>: <%= error[:message] %></em></p>
-    <% end %>
-  <% end %>
+  <%= get_list_html_for_errors(@m) %>
   
 <h1>Enter the variables of the <%= @class_name %>.</h1>
 
 
 <form action="/<%=params["class_name"]%>/submit">
-  <input type= "hidden" name = create_form["id"] value = "<%= @m.id %>">
+  <input type= "hidden" name = create_form[id] value = "<%= @m.id %>">
   
 <!-- Show all non-foreign keys in an input field -->
-  <%= get_list_html_for_non_foreign_key_fields(@m) %>
+  <%= get_list_html_for_non_foreign_key_fields_plus_special_date(@m, @date_array) %>
 
   <!--Show all foreign keys in a select field -->
   <%= get_list_html_for_foreign_key_fields(@m) %>
