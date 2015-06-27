@@ -159,6 +159,9 @@ class ExerciseEvent
   # put your business rules here, and it returns Boolean to indicate if it is valid
   #
   # returns Boolean
+  # TODO - did not use the valid_field_type DRY code that I could have here
+  #         because ForeignKeys got in my way a little
+  #         Would be good to somehow incorporate database_connector modules somehow here
   def valid?
     @errors = []
     # check thename exists and is not empty
