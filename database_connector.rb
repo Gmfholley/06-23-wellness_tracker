@@ -444,6 +444,101 @@ module DatabaseConnector
     end
   end
   
+  # validates the field type for each field
+  # ONLY CALL THIS FROM valid? FUNCTION 
+  # otherwise you risk having duplicate error messages
+  #
+  # returns @errors array
+  def validate_field_types
+    database_field_names.each do |field|
+      field_info = self.class.get_table_info.select {|hash| hash["name"] == field}.first
+      check_field_value_matches_data_type(field_info, field) 
+    end
+    @errors
+  end
+  
+  # checks if this field matches it's field_info and if not adds to @errors
+  # utility method - ONLY CALL FROM valid? function or you will end up with duplicate errors
+  #
+  # returns @errors Array
+  def check_field_value_matches_data_type(field_info, field)
+    check_null(field_info, field)
+    check_integer(field_info, field)
+    @errors
+  end
+  
+  # checks null and if so, adds an error message
+  #
+  # field_info - Hash of table parameters
+  # field      - Attribute
+  #
+  # returns Boolean
+  def check_null(field_info, field)
+    if null?(field_info, field)
+      add_null_message_to_errors(field)
+    end
+  end
+  
+  # checks null and if so, adds an error message
+  #
+  # field_info - Hash of table parameters
+  # field      - Attribute
+  #
+  # returns Boolean
+  def check_integer(field_info, field)
+    if should_be_integer?(field_info, field) && !integer?(field)
+      add_integer_message_to_errors(field)
+    end
+  end
+  
+  # checks if field is null and should not be
+  #
+  # field_info - Hash of table parameters
+  # field      - Attribute
+  #
+  # returns Boolean
+  def null?(field_info, field)
+    field_info["notnull"] ==  1 && self.send(field).blank?
+  end
+  
+  # adds null error to errors array for field
+  #
+  # field - Attribute
+  #
+  # returns Hash of error message
+  def add_null_message_to_errors(field)
+    @errors << {message: "#{field} must not be blank.", variable: "#{field}"}
+  end
+  
+  # checks if field is null and should not be
+  #
+  # field_info - Hash of table parameters
+  # field      - Attribute
+  #
+  # returns Boolean
+  def should_be_integer?(field_info, field)
+    field_info["type"] == "INTEGER"
+  end
+  
+  # checks if field is null and should not be
+  #
+  # field_info - Hash of table parameters
+  # field      - Attribute
+  #
+  # returns Boolean
+  def integer?(field)
+    
+    self.send(field).is_a? Integer
+  end
+  
+  # adds integer error to errors array for field
+  #
+  # field - Attribute
+  #
+  # returns Hash of error message
+  def add_integer_message_to_errors(field)
+    @errors << {message: "#{field} must be an Integer.", variable: "#{field}"}
+  end
   
   # checks if this object has been saved to the database yet
   #
