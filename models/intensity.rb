@@ -6,8 +6,8 @@ class Intensity
   include DatabaseConnector
   
   # duration - length
-  attr_reader :id, :errors
-  attr_accessor :name, :point_adjustment
+  attr_reader :id, :errors, :point_adjustment
+  attr_accessor :name
   
   
   # initializes an Intensity id
@@ -19,15 +19,23 @@ class Intensity
   #
   # returns an instance of the object
   def initialize(args={})
-    if args["id"].blank?
-      @id =  ""
-    else
-      @id = args["id"].to_i
-    end
+    @id = args["id"]
     @name = args[:name] || args["name"]
-    @point_adjustment = (args[:point_adjustment] || args["point_adjustment"]).to_i
+    @point_adjustment = args[:point_adjustment] || args["point_adjustment"]
     @errors = []
+    post_initialize
   end
+  
+  # setter method for point_adjustment to set it to an Integer
+  #
+  # returns point_adjustment
+  
+  def point_adjustment=(new_point_adjustment)
+    @point_adjustment = new_point_adjustment
+    post_initialize
+    @point_adjustment
+  end
+  
   
   def to_s
     "id: #{id}\t\tname: #{name}"
