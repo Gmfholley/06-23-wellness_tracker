@@ -25,10 +25,10 @@ module DatabaseConnector
     #
     # field_names_and_types   - Array of the column names
     #
-    # returns nothing
+    # returns nothing or error message if fails
     def create_table(field_names_and_types)
       stringify = create_string_of_field_names_and_types(field_names_and_types)
-      CONNECTION.execute("CREATE TABLE IF NOT EXISTS #{table_name} (#{stringify});")
+      run_sql("CREATE TABLE IF NOT EXISTS #{table_name} (#{stringify});")
     end
   
     # returns a stringified version of this table, optimizied for SQL statements
@@ -145,7 +145,7 @@ module DatabaseConnector
     
     # returns an integer of the sum field where conditions are met
     #
-    # returns an Integer
+    # returns an Integer or an error message
     def sum_field_where(sum_field, where_field, where_value, where_relationship)
       if where_value.is_a? String
         where_value = add_quotes_to_string(where_value)
@@ -366,6 +366,48 @@ module DatabaseConnector
       true
     end
   end
+  
+  
+  # makes integer values an integer, makes ids blank or an integer
+  #
+  # last step in initialization function
+  def post_initialize
+    initialize_id
+    initialize_fields_by_type
+  end
+  
+  
+  # initializes id to an integer if not blank
+  #
+  # returns @id
+  def initialize_id
+    unless @id.blank?
+      @id = @id.to_i
+    end
+  end
+  
+  # sets Integer types as defined by the table as an integer
+  #
+  # returns the database field names Array
+  def initialize_fields_by_type
+    database_field_names.each do |field|
+      field_info = self.class.get_table_info.select {|hash| hash["name"] == field}.first
+      update_field_value_to_correct_date_type(field_info, field) 
+    end
+  end
+  
+  # updates field to correct field type
+  #
+  # field_info    - Hash that has stored within it the correct type for this field
+  # field         - Field of this object to change
+  #
+  # returns the field value
+  def update_field_value_to_correct_date_type(field_info, field)
+    if field_info["type"] == "Integer"
+      self.field = self.send(field).to_i
+    end
+  end
+  
   
   # checks if this object has been saved to the database yet
   #
