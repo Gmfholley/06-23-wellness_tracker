@@ -143,7 +143,7 @@ class ExerciseEvent
   
   # returns Boolean to indicate if this date-person-exercise type is a duplicate of a different id in the datbase
   #
-  # returns Boolean or id of other id value
+  # returns Boolean
   def duplicate_date_person_type?
     self.id != this_date_person_and_type.id && this_date_person_and_type.id != ""
   end
@@ -240,6 +240,17 @@ class ExerciseEvent
   end
   
   private
+  
+  # smallest date that is valid
+  def smallest_valid_date
+    
+  end
+  
+  
+  # largest date that is valid
+  def largest_valid_date
+    
+  end
   
   #TODO - if they enter this as mm/dd/yyyy, it puts it as mm/dd/yy and leaves off last two digits of year
   # sets date from initialization method
