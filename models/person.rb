@@ -1,4 +1,3 @@
-
 class Person
   
   include DatabaseConnector
@@ -16,13 +15,10 @@ class Person
   #
   # returns an instance of the object
   def initialize(args={})
-    if args["id"].blank?
-      @id =  ""
-    else
-      @id = args["id"].to_i
-    end
+    @id = args["id"]
     @name = args[:name] || args["name"]
     @errors = []
+    post_initialize
   end
   
   def to_s
