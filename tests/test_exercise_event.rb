@@ -84,8 +84,7 @@ class ExerciseEventTest < Minitest::Test
 
     n= ExerciseEvent.new(date: m.date, person_id: m.person_id.id, intensity_id: m.intensity_id.id, 
     duration_id: m.duration_id.id, exercise_type_id: m.exercise_type_id.id)
-    assert_equal(Fixnum, n.duplicate_date_person_type?.class)
-    
+    assert_equal(true, n.duplicate_date_person_type?)
     
     m.exercise_type_id = 2
     
