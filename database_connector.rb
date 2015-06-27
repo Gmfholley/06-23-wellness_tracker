@@ -28,7 +28,7 @@ module DatabaseConnector
     # returns nothing
     def create_table(field_names_and_types)
       stringify = create_string_of_field_names_and_types(field_names_and_types)
-      CONNECTION.execute("CREATE TABLE IF NOT EXISTS #{self.to_s.pluralize.underscore} (#{stringify});")
+      CONNECTION.execute("CREATE TABLE IF NOT EXISTS #{table_name} (#{stringify});")
     end
   
     # returns a stringified version of this table, optimizied for SQL statements
@@ -80,7 +80,7 @@ module DatabaseConnector
     # returns nothing
     def delete_record(id)
       if ok_to_delete?(id)
-        CONNECTION.execute("DELETE FROM #{self.to_s.pluralize.underscore} WHERE id = #{id};")
+        CONNECTION.execute("DELETE FROM #{table_name} WHERE id = #{id};")
       else
         false
       end
@@ -90,7 +90,7 @@ module DatabaseConnector
     #
     # returns Array of a Hash of the resulting records
     def all
-      self.as_objects(CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize.underscore};"))
+      self.as_objects(CONNECTION.execute("SELECT * FROM #{table_name};"))
     end
     
     
@@ -98,7 +98,7 @@ module DatabaseConnector
     #
     # returns object or false
     def exists?(id)
-      rec = CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize.underscore} WHERE id = #{id};").first
+      rec = CONNECTION.execute("SELECT * FROM #{table_name} WHERE id = #{id};").first
       if rec.nil?
         false
       else
@@ -110,7 +110,7 @@ module DatabaseConnector
     #
     # returns the first object (should be only object)
     def create_from_database(id)
-      rec = CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize.underscore} WHERE id = #{id};").first
+      rec = CONNECTION.execute("SELECT * FROM #{table_name} WHERE id = #{id};").first
       if rec.nil?
         self.new()
       else
@@ -140,7 +140,7 @@ module DatabaseConnector
       if field_value.is_a? String
         field_value = add_quotes_to_string(field_value)
       end
-      self.as_objects(CONNECTION.execute("SELECT * FROM #{self.to_s.pluralize.underscore} WHERE #{field_name} #{relationship} #{field_value};"))
+      self.as_objects(CONNECTION.execute("SELECT * FROM #{table_name} WHERE #{field_name} #{relationship} #{field_value};"))
     end
     
     # returns an integer of the sum field where conditions are met
@@ -150,14 +150,14 @@ module DatabaseConnector
       if where_value.is_a? String
         where_value = add_quotes_to_string(where_value)
       end
-      CONNECTION.execute("SELECT SUM(#{sum_field}) FROM #{self.to_s.pluralize.underscore} WHERE #{where_field} #{where_relationship} #{where_value};").first[0]
+      run_sql("SELECT SUM(#{sum_field}) FROM #{table_name} WHERE #{where_field} #{where_relationship} #{where_value};").first[0]
     end
     
     # returns an Array of Hashes containing the field name information for the table
     #
-    # returns an Array
+    # returns an Array or false if SQL error
     def get_table_info
-      CONNECTION.execute("PRAGMA table_info(#{self.to_s.pluralize.underscore});")
+      run_sql("PRAGMA table_info(#{table_name});")
     end
     # adds '' quotes around a string for SQL statement
     #
@@ -172,6 +172,11 @@ module DatabaseConnector
     def add_quotes_to_string(string)
       string = "'#{string}'"
     end
+    
+    def table_name
+      self.to_s.pluralize.underscore
+    end
+    
   end
   ################################################################################
   # End of Class Module Methods
@@ -193,7 +198,7 @@ module DatabaseConnector
   
   # returns the table name - the plural of the object's class
   def table
-    self.class.to_s.pluralize.underscore
+    self.table_name
   end
   
   # returns an Array of the database_field_names for SQL
@@ -332,7 +337,7 @@ module DatabaseConnector
   #
   # returns Boolean
   def exists?
-    rec = CONNECTION.execute("SELECT * FROM #{table} WHERE id = #{@id};").first
+    rec = run_sql("SELECT * FROM #{table} WHERE id = #{@id};").first
     if rec.nil?
       @errors << "That id does not exist in the table."
       false
@@ -362,7 +367,7 @@ module DatabaseConnector
     
     if !saved_already?
       if valid?
-        CONNECTION.execute("INSERT INTO #{table} (#{string_field_names}) VALUES (#{stringify_self});")
+        run_sql("INSERT INTO #{table} (#{string_field_names}) VALUES (#{stringify_self});")
         @id = CONNECTION.last_insert_row_id
       else
         false
@@ -379,7 +384,7 @@ module DatabaseConnector
     
     if valid? && exists?
       query_string = "UPDATE #{table} SET #{parameters_and_values_sql_string} WHERE id = #{@id};"
-      CONNECTION.execute(query_string)
+      run_sql(query_string)
       @id
     else
       false
@@ -397,7 +402,7 @@ module DatabaseConnector
       change_value = add_quotes_to_string(change_value)
     end
     if valid?
-      CONNECTION.execute("UPDATE #{table} SET #{change_field} = #{change_value} WHERE id = #{@id};")
+      run_sql("UPDATE #{table} SET #{change_field} = #{change_value} WHERE id = #{@id};")
     else
       false
     end
@@ -408,23 +413,20 @@ module DatabaseConnector
   # other_table      - String of the other table name
   # other_field_name - String of the field name of this object's ID in another table
   #
-  # returns Array of a Hash of the resulting records
+  # returns Array of a Hash of the resulting records or false if SQL error
   def where_this_id_in_another_table(other_table, other_field_name)
-    CONNECTION.execute("SELECT * FROM #{other_table} WHERE #{other_field_name} == #{@id};")
+    run_sql("SELECT * FROM #{other_table} WHERE #{other_field_name} == #{@id};")
   end
   
   # returns the result of an array where field_name = field_value
   #
-  # other_table      - String of the other table name
+  # class_name       - Class
   # other_field_name - String of the field name of this parameter in the other table
   # this_parameter -   String or Integer of the value of this parameter for this object
   #
-  # returns Array of a Hash of the resulting records
-  def where_this_parameter_in_another_table(other_table, this_parameter, other_field_name)
-    if this_parameter.is_a? String
-      this_paramter = add_quotes_to_string(this_parameter)
-    end
-    CONNECTION.execute("SELECT * FROM #{other_table} WHERE #{other_field_name} == #{this_parameter};")
+  # returns Array of class_name objects
+  def where_this_parameter_in_another_table(class_name, this_parameter, other_field_name)
+    class_name.where_match(other_field_name, this_parameter, "==")
   end
   
   # adds '' quotes around a string for SQL statement
@@ -439,6 +441,20 @@ module DatabaseConnector
   # returns a String
   def add_quotes_to_string(string)
     string = "'#{string}'"
+  end
+  
+  # intended to run SQL string and rescues any errors
+  #
+  # sql_query - String of the SQL query
+  #
+  # returns Array of SQL result or False if SQL error
+  def run_sql(sql_query)
+    begin
+      CONNECTION.execute(sql_query)
+    rescue Exception => msg
+      @errors << msg
+      false
+    end
   end
 
 end
