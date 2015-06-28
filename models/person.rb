@@ -21,6 +21,13 @@ class Person
     post_initialize
   end
   
+  # Array of field names to display
+  #
+  # returns an Array
+  def display_fields
+    database_field_names + ["total_points"]
+  end
+  
   def to_s
     "id: #{id}\t\tname: #{name}"
   end
