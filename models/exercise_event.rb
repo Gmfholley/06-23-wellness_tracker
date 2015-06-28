@@ -41,6 +41,7 @@ class ExerciseEvent
     @duration_name = args["duration_name"]
     @intensity_name = args["intensity_name"]
     @errors = []
+    post_initialize
   end
   
   
