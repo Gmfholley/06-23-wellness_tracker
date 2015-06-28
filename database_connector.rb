@@ -550,14 +550,14 @@ module DatabaseConnector
   def check_foreign_key(field)
     val = self.send(field)
     if val.is_a? ForeignKey
-      add_foreign_key_message_to_errors(field)
+      add_foreign_key_message_to_errors(val)
     end
   end
   
   # if not valid, adds error message to errors
   #
   # returns @errors
-  def add_foreign_key_message_to_errors(field)
+  def add_foreign_key_message_to_errors(val)
     if !val.valid?
       @errors += val.errors
     end
