@@ -9,8 +9,7 @@
 <body>
   <p><%= @message %></p>
 <h1><%=@menu.title%></h1>
- <ul>
-   <%= get_list_html_for_all_menu_items(@menu, @with_links) %>
- </ul>
+
+   <%= self.method(@html_type).call(@menu, @with_links) %>
 
 </body>
