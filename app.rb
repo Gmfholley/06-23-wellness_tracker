@@ -1,25 +1,22 @@
-require 'date'
-require 'sqlite3'
-require 'pry'
-require 'sinatra'
-require 'sinatra/reloader'
-require 'active_support'
+require 'date'                   # ruby's built-in date function
+require 'chronic'                # gem that parses date/time
+require 'sqlite3'                # gem that handles database
+require 'pry'                    # gem that handles debugging
+require 'sinatra'                # gem that handles html views & controller
+require 'sinatra/reloader'       # reloads sinatra without restarting
+require 'active_support'         # all kinds of goodies! including blank?, underscore, humanize, pluralize
 require 'active_support/core_ext/string/filters.rb'
 require 'active_support/core_ext/object/blank.rb'
 require 'active_support/inflector.rb'
 
 
+# Database set up modules and helper classes required by models
+
 require_relative 'foreign_key.rb'
 require_relative 'database_connector.rb'
 require_relative 'database_setup.rb'
 
-
-
-require_relative 'controllers/menu.rb'
-require_relative 'controllers/menu_item.rb'
-require_relative 'controllers/method_to_call.rb'
-
-
+# models
 
 require_relative 'models/person.rb'
 require_relative 'models/duration.rb'
@@ -27,12 +24,18 @@ require_relative 'models/intensity.rb'
 require_relative 'models/exercise_type.rb'
 require_relative 'models/exercise_event.rb'
 
+# controllers
 
+require_relative 'controllers/menu.rb'
+require_relative 'controllers/menu_item.rb'
+require_relative 'controllers/method_to_call.rb'
 
 require_relative 'controllers/defined_menus.rb'
 require_relative 'controllers/menu_controller.rb'
 require_relative 'controllers/create_controller.rb'
 
+
+# views are in views folder
 
 helpers DefinedMenus, MenuController, CreateController
 
