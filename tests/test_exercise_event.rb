@@ -136,6 +136,5 @@ class ExerciseEventTest < Minitest::Test
     assert_equal(4, m.errors.length)
 
   end
-  #TODO - when create form is submitted in view, it bypasses the valid? method.  Why?
   
 end

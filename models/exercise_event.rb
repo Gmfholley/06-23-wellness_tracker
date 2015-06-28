@@ -48,8 +48,10 @@ class ExerciseEvent
   #
   # returns the Foreign Key
   def person_id=(new_id)
-    @person_id = set_foreign_key(new_id, Person)
-    @person_name = person.name
+    if allow_editing?
+      @person_id = set_foreign_key(new_id, Person)
+      @person_name = person.name
+    end
   end
   
   # sets the exercise_type id
@@ -58,8 +60,10 @@ class ExerciseEvent
   #
   # returns the Foreign Key
   def exercise_type_id=(new_id)
-    @exercise_type_id = set_foreign_key(new_id, ExerciseType)
-    @exercise_type_name = exercise_type.name
+    if allow_editing?
+      @exercise_type_id = set_foreign_key(new_id, ExerciseType)
+      @exercise_type_name = exercise_type.name
+    end
   end
   
   # sets the duration id
@@ -68,8 +72,10 @@ class ExerciseEvent
   #
   # returns the Foreign Key
   def duration_id=(new_id)
-    @duration_id = set_foreign_key(new_id, Duration)
-    @duration_name = duration.name
+    if allow_editing?
+      @duration_id = set_foreign_key(new_id, Duration)
+      @duration_name = duration.name
+    end
   end
   
   # sets the intensity id
@@ -78,8 +84,10 @@ class ExerciseEvent
   #
   # returns the Foreign Key
   def intensity_id=(new_id)
-    @intensity_id = set_foreign_key(new_id, Intensity)
-    @intensity_name = intensity.name
+    if allow_editing?
+      @intensity_id = set_foreign_key(new_id, Intensity)
+      @intensity_name = intensity.name
+    end
   end
   
   # sets the date
@@ -88,7 +96,9 @@ class ExerciseEvent
   #
   # returns the integer of the date
   def date=(new_date)
-    set_date(new_date)
+    if allow_editing?
+      set_date(new_date)
+    end
   end
   
   # returns the date as a String in mm/dd/yy form
@@ -117,7 +127,7 @@ class ExerciseEvent
   # NOTE:
   # An over write of the database_connector method, which assumes all parameters are field names
   # This object stores extra variables so as to make fewer trips to the database
-  #     but these extra objects are not stored in the database.
+  #     but these extra variables are not stored in the database.
   #
   # returns Array of strings
   def database_field_names
@@ -135,7 +145,7 @@ class ExerciseEvent
   #
   # returns String
   def to_s
-    "person: #{person}\t\texercise type: #{exercise_type}\t\tdate: #{date_humanized}\t\tduration: #{duration}\t\tintensity: #{intensity}"
+    "person: #{person_name}\t\texercise type: #{exercise_type_name}\t\tdate: #{date_humanized}\t\tduration: #{duration_name}\t\tintensity: #{intensity_name}\t\tpoints: #{points}"
   end
   
   # returns the person's name
@@ -190,25 +200,29 @@ class ExerciseEvent
   # returns Boolean
   def valid?
     @errors = []
-    points
-    validate_field_types
+    points   #calculates points, so it must be at least 0
+    
+    validate_field_types  #checks blank and primitive data types
 
    if integer?("date")
-      if @date < 1
-        @errors << {message: "Date must be greater than 0.", variable: "date"}
+      if convert_int_to_date(date) < smallest_valid_date
+        @errors << {message: "The event cannot be edited when it is older than #{smallest_valid_date.to_s}.  No changes to this page will be saved.", variable: "date"}
+      elsif convert_int_to_date(date) > largest_valid_date
+        @errors << {message: "The event cannot made for a date before #{largest_valid_date.to_s}.", variable: "date"}
       end
+        
     end
     
     # only do a database query if you have good enough data to check the database
     if @errors.length == 0
       if duplicate_date_person_type?
-        @errors << {message: "The database already has this person, date, and exercise type combination.  Change this event's date or find and increase the duration of the current record.", variabe: "date, exercise_type_id, person_id"}
+        @errors << {message: "The database already has this person, date, and exercise type combination. It is record #{this_date_person_and_type.id}. Change this event's date or exercise type or increase the duration of that record.", variabe: "date, exercise_type_id, person_id"}
       end
     end
 
-      if points < 0
-        @errors << {message: "Points must be 0 or greater.", variable: "points"}
-      end
+    if points < 0
+      @errors << {message: "Points must be 0 or greater.", variable: "points"}
+    end
       
     # returns whether @errors is empty
     @errors.empty?
@@ -225,7 +239,7 @@ class ExerciseEvent
   end
   
   
-  # TODO - refactor into date class to handle some of this
+  # TODO - refactor to handle some of this Date stuff
   # gets the points for this person within the dates
   #
   #     id            - Integer of person_id
@@ -234,10 +248,8 @@ class ExerciseEvent
   #
   # Returns an Integer (0 if nil)
   def self.points_for_person_within_dates(id, date_start, date_end)
-    # ExerciseEvent.sum_field_where("points", "person_id", id, "==")
-  #   # convert to int first
-    date_start_int = Date.strptime(date_start, "%m/%d/%y").to_time.to_i
-    date_end_int = Date.strptime(date_end, "%m/%d/%y").to_time.to_i
+    date_start_int = set_any_date(date_start)
+    date_end_int = set_any_date(date_end)
     
     if !id.blank?
       query_string = "SELECT SUM(points) FROM #{self.to_s.underscore.pluralize} WHERE person_id = #{id} AND 
@@ -257,7 +269,7 @@ class ExerciseEvent
     query_string = 
     "SELECT exercise_events.id, exercise_events.date, exercise_events.person_id,    
             exercise_events.intensity_id, exercise_events.duration_id, exercise_events.exercise_type_id, 
-            exercise_events.points AS points, durations.name AS duration_name, people.name AS person_name,
+            exercise_events.points, durations.name AS duration_name, people.name AS person_name,
             exercise_types.name AS exercise_type_name, intensities.name AS intensity_name
     FROM exercise_events
     JOIN people ON people.id == exercise_events.person_id
@@ -280,7 +292,7 @@ class ExerciseEvent
     query_string = 
     "SELECT exercise_events.id, exercise_events.date, exercise_events.person_id,    
             exercise_events.intensity_id, exercise_events.duration_id, exercise_events.exercise_type_id, 
-            exercise_events.points AS points, durations.name AS duration_name, people.name AS person_name,
+            exercise_events.points, durations.name AS duration_name, people.name AS person_name,
             exercise_types.name AS exercise_type_name, intensities.name AS intensity_name
     FROM exercise_events
     JOIN people ON people.id == exercise_events.person_id
@@ -299,34 +311,66 @@ class ExerciseEvent
   
   private
   
-  # smallest date that is valid
-  def smallest_valid_date
-    
-  end
   
-  
-  # largest date that is valid
-  def largest_valid_date
-    
-  end
-  
-  #TODO - if they enter this as mm/dd/yyyy, it puts it as mm/dd/yy and leaves off last two digits of year
-  # sets date from initialization method
+  # returns a Boolean if you can edit this event
   #
+  # returns Boolean
+  def allow_editing?
+    convert_int_to_date(date) > smallest_valid_date && !date.blank?
+  end
+  
+  # smallest DateTime object that is valid
+  #
+  # returns DateTime
+  def smallest_valid_date
+    today - 7
+  end
+  
+  
+  # largest DateTime object that is valid
+  #
+  # returns DateTime
+  def largest_valid_date
+    today
+  end
+  
   # date - checks if integer, blank or a String in mm/dd/yy form
   #
   # returns @date
   def set_date(date)  
+    @date = set_any_date(date)
+    post_initialize
+  end
+  
+  # returns the date after it has been rendered into an Integer or nil if not correct
+  # Note: Chronic returns a Time object and it is affected by time
+  #     I only want date data, so I set all dates to noon (if set to midnight, our system has timezone difficulties)
+  #
+  # date - String or Integer of the date
+  #
+  # returns Integer or nil
+  def set_any_date(date)
     begin
       if date.is_a? Integer
-        @date = date
+        return date
       else
-        @date = Date.strptime(date, '%m/%d/%y').to_time.to_i
+        return Chronic.parse("#{date} noon").to_i
       end
     rescue
-      @date = nil
+      return nil
     end
-    post_initialize
+  end
+  
+  # converts Time as an Integer to DateTime object
+  #
+  # returns a DateTime object
+  def convert_int_to_date(int_date)
+    Time.at(int_date).to_datetime
+  end
+  
+  # returns a DateTime object of today at noon
+  def today
+    Chronic.parse("today noon").to_datetime
   end
   
   # returns the ForeignKey object for this id and class
