@@ -56,23 +56,8 @@ module DatabaseConnector
       end
     end
     
-    ####### NOTE: THIS METHOD DOES NOT WORK BECAUSE YOU CANNOT GET THE FIELDNAMES
-    # # creates a new record in the table
-    # #
-    # # records                 - multi-dimensional Array of column names, each row representing a new record
-    # #
-    # # returns nothing
-    # def create_new_records(records)
-    # ####
-    #   (0..records.length - 1).each do |x|
-    #     record_as_string = add_quotes_to_string(records[x].join("', '"))
-    #     CONNECTION.execute("INSERT INTO #{self.to_s.pluralize.underscore} (#{string_field_names}) VALUES (#{record_as_string});")
-    #   end
-    # end
-    ##########
-    
     # meant to be written over in each class with a valid method
-    # checks before deleting if it is a foreign key in another table
+    # overwrite if you need to check if it exists as a foreign key in another table before deleting
     # 
     # returns Boolean
     def ok_to_delete?(id)
@@ -234,10 +219,20 @@ module DatabaseConnector
   end
   
   # returns an Array of the database_field_names for SQL
+  #
+  # returns an Array
   def database_field_names
     attributes = instance_variables.collect{|a| a.to_s.gsub(/@/,'')}
     delete_from_array(attributes, attributes_that_should_not_be_in_database_field_names)
     attributes
+  end
+  
+  # Array that should be displayed
+  # Defaults to database_field_names but can be overwritten
+  #
+  # returns an Array
+  def display_fields
+    database_field_names
   end
   
   # deletes the delete_array from array
@@ -252,7 +247,6 @@ module DatabaseConnector
     end
     array
   end
-  
   
   # Array of the attributes names that should not be included
   #
@@ -321,7 +315,6 @@ module DatabaseConnector
   def non_foreign_key_fields
     self.database_field_names - self.foreign_key_fields
   end
-  
   
   # returns an Array of this object's parameters
   #
@@ -398,7 +391,6 @@ module DatabaseConnector
     end
   end
   
-  
   # makes integer values an integer, makes ids blank or an integer
   #
   # last step in initialization function
@@ -406,7 +398,6 @@ module DatabaseConnector
     initialize_id
     initialize_fields_by_type
   end
-  
   
   # initializes id to an integer or empty string if blank
   #
@@ -428,7 +419,7 @@ module DatabaseConnector
   def initialize_fields_by_type
     database_field_names.each do |field|
       field_info = self.class.get_table_info.select {|hash| hash["name"] == field}.first
-      update_field_value_to_correct_date_type(field_info, field) 
+      initialize_to_correct_date_type(field_info, field) 
     end
   end
   
@@ -438,11 +429,55 @@ module DatabaseConnector
   # field         - Field of this object to change
   #
   # returns the field value
-  def update_field_value_to_correct_date_type(field_info, field)
-    if field_info["type"] == "INTEGER" && !self.send(field).blank?
-      int = self.send(field).to_i
-      self.instance_variable_set("@#{field}".to_sym, int)
+  def initialize_to_correct_date_type(field_info, field)
+    initialize_integer(field_info, field)
+    initialize_float(field_info, field)
+  end
+  
+  # initializes to an Integer if an Integer, but not for blanks or ForeignKeys
+  #
+  # field_info    - Hash that has stored within it the correct type for this field
+  # field         - Field of this object to change
+  #
+  # returns the field value
+  def initialize_integer(field_info, field)
+    if should_be_integer?(field_info, field) && !integer_exception?(field)
+        update_value_of_variable(field, self.send(field).to_i)
     end
+  end
+  
+  # returns Boolean if this field should not be .to_i yet (ie - if blank or a ForeignKey)
+  #
+  # returns Boolean
+  def integer_exception?(field)
+    foreign_key?(field) || self.send(field).blank?
+  end
+  
+  def foreign_key?(field)
+    self.send(field).is_a? ForeignKey
+  end
+  
+  # initializes to a float if field type is a float but leaves blanks as blank
+  #
+  # field_info    - Hash that has stored within it the correct type for this field
+  # field         - Field of this object to change
+  #
+  # returns the field value
+  def initialize_float(field_info, field)
+    if should_be_float?(field_info, field) && !self.send(field).blank?
+      update_value_of_variable(field, self.send(field).to_f)
+    end
+    field
+  end
+  
+  # updates the values of the instance variable
+  #
+  # var_name    - String of the variable name (without the @ symbol)
+  # new_value   - the new value - any type
+  #
+  # returns the new value
+  def update_value_of_variable(var_name, new_value)
+    self.instance_variable_set("@#{var_name}".to_sym, new_value)
   end
   
   # validates the field type for each field
@@ -466,6 +501,7 @@ module DatabaseConnector
     check_null(field_info, field)
     check_integer(field_info, field)
     check_real(field_info, field)
+    check_foreign_key(field)
     @errors
   end
   
@@ -481,19 +517,19 @@ module DatabaseConnector
     end
   end
   
-  # checks null and if so, adds an error message
+  # checks integer and if so, adds an error message
   #
   # field_info - Hash of table parameters
   # field      - Attribute
   #
   # returns Boolean
   def check_integer(field_info, field)
-    if should_be_integer?(field_info, field) && !integer?(field)
+    if should_be_integer?(field_info, field) && !integer?(field)  && !foreign_key?(field)
       add_integer_message_to_errors(field)
     end
   end
   
-  # checks null and if so, adds an error message
+  # checks real and if so, adds an error message
   #
   # field_info - Hash of table parameters
   # field      - Attribute
@@ -504,6 +540,29 @@ module DatabaseConnector
       add_float_message_to_errors(field)
     end
   end
+  
+  # checks ForeignKey and if so, adds an error message
+  #
+  # field_info - Hash of table parameters
+  # field      - Attribute
+  #
+  # returns Boolean
+  def check_foreign_key(field)
+    val = self.send(field)
+    if val.is_a? ForeignKey
+      add_foreign_key_message_to_errors(field)
+    end
+  end
+  
+  # if not valid, adds error message to errors
+  #
+  # returns @errors
+  def add_foreign_key_message_to_errors(field)
+    if !val.valid?
+      @errors += val.errors
+    end
+  end
+  
   
   # checks if field is null and should not be
   #
