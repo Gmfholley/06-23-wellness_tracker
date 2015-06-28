@@ -362,6 +362,7 @@ class ExerciseEvent
     rescue
       @date = nil
     end
+    post_initialize
   end
   
   # returns the ForeignKey object for this id and class
