@@ -4,10 +4,6 @@ require 'date'
 class ExerciseEvent
   include DatabaseConnector
   
-  
-  # TODO - Because of the foreign keys and dates, do not run post_initialize on this method
-  # but consider doing it sometime in future
-  
   attr_reader :id, :errors, :exercise_type_id, :person_id, :duration_id, :intensity_id, :date
   attr_reader :person_name, :duration_name, :intensity_name, :exercise_type_name
   
@@ -36,6 +32,7 @@ class ExerciseEvent
     @intensity_id = set_foreign_key((args[:intensity_id] || args["intensity_id"]), Intensity)
     
     # store these variables in Ruby if available so you don't have to make multiple trips to database
+    # only useful if you are using joins to get this info in one SQL statement
     @person_name = args["person_name"]
     @exercise_type_name = args["exercise_type_name"]
     @duration_name = args["duration_name"]
@@ -191,37 +188,16 @@ class ExerciseEvent
   # put your business rules here, and it returns Boolean to indicate if it is valid
   #
   # returns Boolean
-  # TODO - did not use the valid_field_type DRY code that I could have here
-  #         because ForeignKeys got in my way a little
-  #         Would be good to somehow incorporate database_connector modules somehow here
   def valid?
     @errors = []
-    # check thename exists and is not empty
-    # if !person_id.valid?
-    #   @errors += person_id.errors
-    # end
-    #
-    # if !duration_id.valid?
-    #   @errors += duration_id.errors
-    # end
-    #
-    # if !exercise_type_id.valid?
-    #   @errors += exercise_type_id.errors
-    # end
     points
     validate_field_types
-    # # checks the number of points
-   #  if @date.to_s.empty?
-   #    @errors << {message: "Date cannot be empty.", variable: "date"}
-   #  elsif @date.is_a? Integer
+
    if integer?("date")
       if @date < 1
         @errors << {message: "Date must be greater than 0.", variable: "date"}
       end
     end
-    # else
-    #   @errors << {message: "Date must be a number.", variable: "date"}
-    # end
     
     # only do a database query if you have good enough data to check the database
     if @errors.length == 0
@@ -229,23 +205,11 @@ class ExerciseEvent
         @errors << {message: "The database already has this person, date, and exercise type combination.  Change this event's date or find and increase the duration of the current record.", variabe: "date, exercise_type_id, person_id"}
       end
     end
-    
-    # if !intensity_id.valid?
-    #   @errors += intensity_id.errors
-    # end
-    
-    # checks the number of points
-    # points
- #    if points.to_s.empty?
- #      @errors << {message: "Length cannot be empty.", variable: "points"}
- #    elsif points.is_a? Integer
+
       if points < 0
         @errors << {message: "Points must be 0 or greater.", variable: "points"}
       end
-    # else
- #      @errors << {message: "Points must be a number.", variable: "points"}
- #    end
- #
+      
     # returns whether @errors is empty
     @errors.empty?
   end
