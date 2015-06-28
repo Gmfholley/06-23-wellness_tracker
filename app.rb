@@ -9,9 +9,10 @@ require 'active_support/core_ext/object/blank.rb'
 require 'active_support/inflector.rb'
 
 
+require_relative 'foreign_key.rb'
 require_relative 'database_connector.rb'
 require_relative 'database_setup.rb'
-require_relative 'foreign_key.rb'
+
 
 
 require_relative 'controllers/menu.rb'
@@ -36,23 +37,18 @@ require_relative 'controllers/create_controller.rb'
 helpers DefinedMenus, MenuController, CreateController
 
 get "/home" do
-  @menu = home_menu
-  @with_links = true
+  home_menu_local_variables
   erb :menu
 end
-
 
 ###############################
 # Show the menu for this class
 get "/:class_name" do
-  @class_name = menu_to_class_name[params["class_name"]]
-  
+  class_variable(params["class_name"])
   if @class_name.nil?
     erb :not_appearing
   else
-  
-    @menu = crud_menu(@class_name)
-    @with_links = true
+    crud_menu_local_variables
     erb :menu
   end
 end
@@ -62,30 +58,30 @@ end
 
 get "/:class_name/:action" do
   
-  @class_name = menu_to_class_name[params["class_name"]]
-  
-
+  class_variable(params["class_name"])
   case params["action"]
   when "update", "delete"
     @menu = object_menu(@class_name, params["action"])
     @with_links = true
+    @html_type = "get_table_html_for_all_menu_items"
     erb :menu
   when "show"
     @menu = object_menu(@class_name, params["action"])
     @links = false
+    @html_type = "get_table_html_for_all_menu_items"
     erb :menu
   when "create"
     # create an object so you can get its instance variables
     @m = @class_name.new
     @date_array = []
-    
     if @class_name == ExerciseEvent
       @date_array = ["date"]
     end
     erb :create
   when "submit"
+    class_variable(params["class_name"])
     
-    @class_name = menu_to_class_name[params["class_name"]]
+    
     @m = @class_name.new(params["create_form"])
     @foreign_key_choices = @m.foreign_key_choices
   
@@ -93,6 +89,7 @@ get "/:class_name/:action" do
       @message = "Successfully saved!"
       @menu = object_menu(@class_name, "show")
       @links = false
+      @html_type = "get_table_html_for_all_menu_items"
       erb :menu
     else 
       @date_array = []
@@ -125,11 +122,13 @@ get "/:class_name/:action/:x" do
       @message = "Successfully deleted."
       @menu = object_menu(@class_name, "show")
       @links = false
+      @html_type = "get_table_html_for_all_menu_items"
       erb :menu
     else
-      @message = "This #{@class_name} was not found or was in another table.  Not deleted."
+      @message = "This #{@class_name} cannot be deleted because it is currently used in another table."
       @menu = object_menu(@class_name, "show")
       @links = false
+      @html_type = "get_table_html_for_all_menu_items"
       erb :menu
     end
   else
@@ -140,4 +139,21 @@ end
 
 get "/:not_listed" do
   erb :not_appearing
+end
+
+
+def home_menu_local_variables
+  @menu = home_menu
+  @with_links = true
+  @html_type = "get_list_html_for_all_menu_items"
+end
+
+def crud_menu_local_variables
+  @menu = crud_menu(@class_name)
+  @with_links = true
+  @html_type = "get_list_html_for_all_menu_items"
+end
+
+def class_variable(class_as_string)
+  @class_name = menu_to_class_name[params["class_name"]]
 end
