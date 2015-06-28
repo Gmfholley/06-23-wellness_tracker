@@ -9,6 +9,7 @@ class ExerciseEvent
   # but consider doing it sometime in future
   
   attr_reader :id, :errors, :exercise_type_id, :person_id, :duration_id, :intensity_id, :date
+  attr_reader :person_name, :duration_name, :intensity_name, :exercise_type_name
   
   # initializes object
   #
@@ -28,13 +29,17 @@ class ExerciseEvent
     else
       @id = args["id"].to_i
     end
-
     set_date(args["date"] || args[:date])
+    @person_id = set_foreign_key((args[:person_id] || args["person_id"]), Person)
+    @exercise_type_id = set_foreign_key((args[:exercise_type_id] || args["exercise_type_id"]), ExerciseType)
+    @duration_id = set_foreign_key((args[:duration_id] || args["duration_id"]), Duration)
+    @intensity_id = set_foreign_key((args[:intensity_id] || args["intensity_id"]), Intensity)
     
-    @person_id = set_foreign_key((args[:person_id] || args["person_id"]).to_i, Person)
-    @exercise_type_id = set_foreign_key((args[:exercise_type_id] || args["exercise_type_id"]).to_i, ExerciseType)
-    @duration_id = set_foreign_key((args[:duration_id] || args["duration_id"]).to_i, Duration)
-    @intensity_id = set_foreign_key((args[:intensity_id] || args["intensity_id"]).to_i, Intensity)
+    # store these variables in Ruby if available so you don't have to make multiple trips to database
+    @person_name = args["person_name"]
+    @exercise_type_name = args["exercise_type_name"]
+    @duration_name = args["duration_name"]
+    @intensity_name = args["intensity_name"]
     @errors = []
   end
   
@@ -45,7 +50,8 @@ class ExerciseEvent
   #
   # returns the Foreign Key
   def person_id=(new_id)
-    @person_id = set_foreign_key(new_id.to_i, Person)
+    @person_id = set_foreign_key(new_id, Person)
+    @person_name = person.name
   end
   
   # sets the exercise_type id
@@ -54,7 +60,8 @@ class ExerciseEvent
   #
   # returns the Foreign Key
   def exercise_type_id=(new_id)
-    @exercise_type_id = set_foreign_key(new_id.to_i, ExerciseType)
+    @exercise_type_id = set_foreign_key(new_id, ExerciseType)
+    @exercise_type_name = exercise_type.name
   end
   
   # sets the duration id
@@ -63,7 +70,8 @@ class ExerciseEvent
   #
   # returns the Foreign Key
   def duration_id=(new_id)
-    @duration_id = set_foreign_key(new_id.to_i, Duration)
+    @duration_id = set_foreign_key(new_id, Duration)
+    @duration_name = duration.name
   end
   
   # sets the intensity id
@@ -72,7 +80,8 @@ class ExerciseEvent
   #
   # returns the Foreign Key
   def intensity_id=(new_id)
-    @intensity_id = set_foreign_key(new_id.to_i, Intensity)
+    @intensity_id = set_foreign_key(new_id, Intensity)
+    @intensity_name = intensity.name
   end
   
   # sets the date
@@ -106,6 +115,24 @@ class ExerciseEvent
     end
   end
   
+  # Array of the field names for this object from the database
+  # NOTE:
+  # An over write of the database_connector method, which assumes all parameters are field names
+  # This object stores extra variables so as to make fewer trips to the database
+  #     but these extra objects are not stored in the database.
+  #
+  # returns Array of strings
+  def database_field_names
+    ["person_id", "exercise_type_id", "intensity_id", "duration_id", "date"]
+  end
+  
+  # Array of methods/parameters that should be displayed
+  #
+  # returns an Array of strings
+  def display_fields
+    ["person_name", "date_humanized", "exercise_type_name", "intensity_name", "duration_name", "points"]
+  end
+  
   # returns String representing this object's parameters
   #
   # returns String
@@ -115,28 +142,28 @@ class ExerciseEvent
   
   # returns the person's name
   #
-  # returns String
+  # returns ForeignKey
   def person
     person_id.get_object
   end
   
   # returns the exercise type name
   #
-  # returns String
+  # returns ForeignKey
   def exercise_type
     exercise_type_id.get_object
   end
   
   # returns the intensity name
   #
-  # returns String
+  # returns ForeignKey
   def intensity
     intensity_id.get_object
   end
   
   # returns the duration name
   #
-  # returns String
+  # returns ForeignKey
   def duration
     duration_id.get_object
   end
@@ -169,28 +196,31 @@ class ExerciseEvent
   def valid?
     @errors = []
     # check thename exists and is not empty
-    if !person_id.valid?
-      @errors += person_id.errors
-    end
-    
-    if !duration_id.valid?
-      @errors += duration_id.errors
-    end
-    
-    if !exercise_type_id.valid?
-      @errors += exercise_type_id.errors
-    end
-    
-    # checks the number of points
-    if @date.to_s.empty?
-      @errors << {message: "Date cannot be empty.", variable: "date"}
-    elsif @date.is_a? Integer
+    # if !person_id.valid?
+    #   @errors += person_id.errors
+    # end
+    #
+    # if !duration_id.valid?
+    #   @errors += duration_id.errors
+    # end
+    #
+    # if !exercise_type_id.valid?
+    #   @errors += exercise_type_id.errors
+    # end
+    points
+    validate_field_types
+    # # checks the number of points
+   #  if @date.to_s.empty?
+   #    @errors << {message: "Date cannot be empty.", variable: "date"}
+   #  elsif @date.is_a? Integer
+   if integer?("date")
       if @date < 1
         @errors << {message: "Date must be greater than 0.", variable: "date"}
       end
-    else
-      @errors << {message: "Date must be a number.", variable: "date"}
     end
+    # else
+    #   @errors << {message: "Date must be a number.", variable: "date"}
+    # end
     
     # only do a database query if you have good enough data to check the database
     if @errors.length == 0
@@ -199,22 +229,22 @@ class ExerciseEvent
       end
     end
     
-    if !intensity_id.valid?
-      @errors += intensity_id.errors
-    end
+    # if !intensity_id.valid?
+    #   @errors += intensity_id.errors
+    # end
     
     # checks the number of points
-    points
-    if points.to_s.empty?
-      @errors << {message: "Length cannot be empty.", variable: "points"}
-    elsif points.is_a? Integer
+    # points
+ #    if points.to_s.empty?
+ #      @errors << {message: "Length cannot be empty.", variable: "points"}
+ #    elsif points.is_a? Integer
       if points < 0
         @errors << {message: "Points must be 0 or greater.", variable: "points"}
       end
-    else
-      @errors << {message: "Points must be a number.", variable: "points"}
-    end
-  
+    # else
+ #      @errors << {message: "Points must be a number.", variable: "points"}
+ #    end
+ #
     # returns whether @errors is empty
     @errors.empty?
   end
@@ -251,6 +281,54 @@ class ExerciseEvent
       CONNECTION.execute(query_string).first[0].to_i
     else
       0
+    end
+  end
+  
+  # over-writes the all database_connector method for efficiency because this object has four foreign keys
+  # returns all ExerciseEvents
+  #
+  # returns Array of Objects
+  def self.all
+    query_string = 
+    "SELECT exercise_events.id, exercise_events.date, exercise_events.person_id,    
+            exercise_events.intensity_id, exercise_events.duration_id, exercise_events.exercise_type_id, 
+            exercise_events.points AS points, durations.name AS duration_name, people.name AS person_name,
+            exercise_types.name AS exercise_type_name, intensities.name AS intensity_name
+    FROM exercise_events
+    JOIN people ON people.id == exercise_events.person_id
+    JOIN exercise_types ON exercise_types.id == exercise_events.exercise_type_id
+    JOIN intensities ON intensities.id == exercise_events.intensity_id
+    JOIN durations ON durations.id == exercise_events.duration_id
+    ORDER BY people.name ASC, exercise_events.date ASC;"
+    
+    results = run_sql(query_string)
+    self.as_objects(results)
+  end
+  
+  # over-writes the all database_connector method for efficiency because this object has four foreign keys
+  # returns this ExerciseEvent
+  #
+  # id - Integer of the id
+  #
+  # returns ExerciseEvent
+  def self.create_from_database(id)
+    query_string = 
+    "SELECT exercise_events.id, exercise_events.date, exercise_events.person_id,    
+            exercise_events.intensity_id, exercise_events.duration_id, exercise_events.exercise_type_id, 
+            exercise_events.points AS points, durations.name AS duration_name, people.name AS person_name,
+            exercise_types.name AS exercise_type_name, intensities.name AS intensity_name
+    FROM exercise_events
+    JOIN people ON people.id == exercise_events.person_id
+    JOIN exercise_types ON exercise_types.id == exercise_events.exercise_type_id
+    JOIN intensities ON intensities.id == exercise_events.intensity_id
+    JOIN durations ON durations.id == exercise_events.duration_id
+    WHERE exercise_events.id = #{id};"
+    
+    rec = run_sql(query_string).first
+    if rec.nil?
+      self.new
+    else
+      self.new(rec)
     end
   end
   

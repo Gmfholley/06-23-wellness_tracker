@@ -98,18 +98,18 @@ class ExerciseEventTest < Minitest::Test
     m = ExerciseEvent.new(id: nil, date: nil, person_id: nil, intensity_id: nil, 
     duration_id: nil, exercise_type_id: nil)
     m.valid?
-    assert_equal(5, m.errors.length)
+    assert_equal(6, m.errors.length)
 
     # can't be empty strings
     m = ExerciseEvent.new(id: "", date: "", person_id: "", intensity_id: "", 
     duration_id: "", exercise_type_id: "")
     m.valid?
-    assert_equal(5, m.errors.length)
+    assert_equal(6, m.errors.length)
 
     # can't be whatever is created when no args are passed
     m = ExerciseEvent.new()
     m.valid?
-    assert_equal(5, m.errors.length)
+    assert_equal(6, m.errors.length)
 
 
     # person, intensity, duration, type must belong to the table; length must be a number
