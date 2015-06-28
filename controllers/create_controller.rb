@@ -71,10 +71,10 @@ module CreateController
       <label for = '#{field}' >
         Select your #{field}:
       </label>
-      <input type = 'text' 
-        name = create_form[#{field}]
-        placeholder = 'Type in the #{field}'
-        value = '#{object.send(field)}'>
+      <input  type = 'text' 
+              name = create_form[#{field}]
+              placeholder = 'Type in the #{field}'
+              value = '#{object.send(field)}'>
       </input>
     </p>"
   end
@@ -86,10 +86,10 @@ module CreateController
       <label for = '#{field}' >
         Select your #{field}:
       </label>
-      <input type = 'date' 
-        name = create_form[#{field}]
-        placeholder = 'mm/dd/yy'
-        value = '#{date_humanized(object.send(field))}'>
+      <input  type = 'date' 
+              name = create_form[#{field}]
+              placeholder = 'mm/dd/yy'
+              value = '#{date_humanized(object.send(field))}'>
       </input>
     </p>"
   end
@@ -130,10 +130,10 @@ module CreateController
       html << 
         "<p>
           <label for #{foreign_key}>
-            Select your #{foreign_key}:
+              Select your #{foreign_key.humanize}:
           </label>
           <select name = 'create_form[#{foreign_key}]'>
-            #{get_list_html_foreign_key_choices(object, foreign_key, object.foreign_key_choices[x])}
+              #{option_foreign_key_choices(object, foreign_key, object.foreign_key_choices[x])}
           </select>
         </p>"
     end
@@ -143,12 +143,12 @@ module CreateController
   # returns string of html for each of the options in a select html variable
   #
   # returns String
-  def get_list_html_foreign_key_choices(object, foreign_key, foreign_key_choices_array)
+  def option_foreign_key_choices(object, foreign_key, foreign_key_choices_array)
     html = []
     foreign_key_choices_array.each do |choice|
       html <<
-      "<option value = #{choice.id} 
-        #{is_selected_html?(object, foreign_key, choice)}>
+      "<option  value = #{choice.id} 
+                #{is_selected_html?(object, foreign_key, choice)}>
         #{choice.name}
        </option>"
     end
