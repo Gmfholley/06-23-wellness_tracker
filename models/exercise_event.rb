@@ -206,7 +206,9 @@ class ExerciseEvent
 
    if integer?("date")
       if convert_int_to_date(date) < smallest_valid_date
-        @errors << {message: "The event cannot be edited when it is older than #{smallest_valid_date.to_s}.  No changes to this page will be saved.", variable: "date"}
+        @errors << 
+          {message: "The event cannot be edited when it is older than #{smallest_valid_date.to_s}.  No changes to 
+          this page will be saved.", variable: "date"}
       elsif convert_int_to_date(date) > largest_valid_date
         @errors << {message: "The event cannot made for a date before #{largest_valid_date.to_s}.", variable: "date"}
       end
@@ -216,7 +218,12 @@ class ExerciseEvent
     # only do a database query if you have good enough data to check the database
     if @errors.length == 0
       if duplicate_date_person_type?
-        @errors << {message: "The database already has this person, date, and exercise type combination. It is record #{this_date_person_and_type.id}. Change this event's date or exercise type or increase the duration of that record.", variabe: "date, exercise_type_id, person_id"}
+        @errors << 
+          {message: 
+          "The database already has this person, date, and exercise type combination. It is record 
+          #{this_date_person_and_type.id}. Change this event's date or exercise type or increase the duration of that 
+          record.", 
+          variabe: "date, exercise_type_id, person_id"}
       end
     end
 
@@ -351,7 +358,7 @@ class ExerciseEvent
   # returns Integer or nil
   def set_any_date(date)
     begin
-      if date.is_a? Integer
+      if date.is_a? Integer or date.blank?
         return date
       else
         return Chronic.parse("#{date} noon").to_i

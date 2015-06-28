@@ -512,6 +512,7 @@ module DatabaseConnector
   #
   # returns Boolean
   def check_null(field_info, field)
+    
     if null?(field_info, field)
       add_null_message_to_errors(field)
     end
