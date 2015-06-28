@@ -19,11 +19,11 @@ module DefinedMenus
   # returns a Menu
   def home_menu
     m = Menu.new("Where would you like to go?")
-    m.add_menu_item(user_message: "Work with people", method_name: "person")
-    m.add_menu_item(user_message: "Work with durations", method_name: "duration")
-    m.add_menu_item(user_message: "Work with intensities.", method_name: "intensity")
-    m.add_menu_item(user_message: "Work with exercise types.", method_name: "exercise_type")
-    m.add_menu_item(user_message: "Work with exercise events.", method_name: "exercise_event")
+    m.add_menu_item(user_message: ["Work with people"], method_name: "person")
+    m.add_menu_item(user_message: ["Work with durations"], method_name: "duration")
+    m.add_menu_item(user_message: ["Work with intensities."], method_name: "intensity")
+    m.add_menu_item(user_message: ["Work with exercise types."], method_name: "exercise_type")
+    m.add_menu_item(user_message: ["Work with exercise events."], method_name: "exercise_event")
     m
   end
 
@@ -33,10 +33,10 @@ module DefinedMenus
   def crud_menu(class_name)
     class_string = class_name.to_s.underscore.downcase
     m = Menu.new("What would you like to do with #{class_string.humanize.downcase.pluralize}?")
-    m.add_menu_item(user_message: "Create a new #{class_string.humanize.downcase}.", method_name: "#{class_string}/create")
-    m.add_menu_item(user_message: "Show all #{class_string.humanize.downcase.pluralize}.", method_name: "#{class_string}/show")
-    m.add_menu_item(user_message: "Update a #{class_string.humanize.downcase}.", method_name: "#{class_string}/update")
-    m.add_menu_item(user_message: "Delete a #{class_string.humanize.downcase}.", method_name: "#{class_string}/delete")
+    m.add_menu_item(user_message: ["Create a new #{class_string.humanize.downcase}."], method_name: "#{class_string}/create")
+    m.add_menu_item(user_message: ["Show all #{class_string.humanize.downcase.pluralize}."], method_name: "#{class_string}/show")
+    m.add_menu_item(user_message: ["Update a #{class_string.humanize.downcase}."], method_name: "#{class_string}/update")
+    m.add_menu_item(user_message: ["Delete a #{class_string.humanize.downcase}."], method_name: "#{class_string}/delete")
     m
   end
 
@@ -49,7 +49,7 @@ module DefinedMenus
     create_menu = Menu.new(menu_title_hash_by_action(class_string.humanize.downcase)[action])
     all = class_name.all
     all.each_with_index do |object, x|
-      create_menu.add_menu_item({user_message: object.to_s, method_name: "#{class_string}/#{action}/#{object.id}"})
+      create_menu.add_menu_item({user_message: [object.to_s], method_name: "#{class_string}/#{action}/#{object.id}"})
     end
     create_menu
   end

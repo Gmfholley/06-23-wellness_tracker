@@ -31,14 +31,30 @@ module MenuController
     if links
       "<li>
         <a href = /#{item.method.method_name}>
-          #{item.user_message}
+          <tr>
+            #{html_user_message_row(item.user_message)}
+          </tr>
         </a>
       </li>"
     else
       "<li>
-        #{item.user_message}
+        <tr>
+          #{html_user_message_row(item.user_message)}
+        </tr>
       </li>"
     end
   end
+
+  def html_user_message_row(user_message_array)
+    html = []
+    user_message_array.each do |item|
+      html << 
+        "<td>
+            #{item}  
+        </td>"
+    end
+    html.join
+  end
+
 
 end
