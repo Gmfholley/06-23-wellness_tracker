@@ -2,14 +2,19 @@
 <! Menu items are their own links >
 <! Menu items have a parameter called method that contains the method_name that should be called next.  This is what is used as the urls. -->
 <header>
-  <a href = "/home">home </a>
-  <br>
-  <a href = "../../<%= params["class_name"] %> "><%=params["class_name"] %></a>
+  <nav>
+    <ul>
+      <li><a href = "/home">home </a></li>
+      <li><a href = "../../<%= params["class_name"] %>"><%=params["class_name"]%></a></li>
+    </ul>
+  </nav>
 </header>
-<body>
-  <p><%= @message %></p>
-<h1><%=@menu.title%></h1>
+
+<div id = "primary">
+  <div class="message"><p><%= @message %></p></div>
+  
+  <h1><%=@menu.title%></h1>
 
    <%= self.method(@html_type).call(@menu, @with_links) %>
 
-</body>
+</div>
