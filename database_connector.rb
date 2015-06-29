@@ -391,6 +391,10 @@ module DatabaseConnector
     end
   end
   
+  ####################################################
+  # post_initialize methods
+  ####################################################
+  
   # makes integer values an integer, makes ids blank or an integer
   #
   # last step in initialization function
@@ -479,7 +483,9 @@ module DatabaseConnector
   def update_value_of_variable(var_name, new_value)
     self.instance_variable_set("@#{var_name}".to_sym, new_value)
   end
-  
+  ####################################################
+  # valid? methods
+  ####################################################
   # validates the field type for each field
   # ONLY CALL THIS FROM valid? FUNCTION 
   # otherwise you risk having duplicate error messages
