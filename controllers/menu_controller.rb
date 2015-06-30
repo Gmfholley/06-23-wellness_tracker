@@ -35,8 +35,12 @@ module MenuController
   def get_table_html_for_all_menu_items(menu, with_links=true)
     html = ["<table>"]  
     html << table_header
-    menu.menu_items.each do |item|
-      html << "<tr>"
+    menu.menu_items.each_with_index do |item, x|
+      if x % 2 == 0 
+        html << "<tr class = 'alt'>"
+      else
+        html << "<tr>"
+      end
       html <<   html_table_row(item, with_links)
       html << "</tr>"
     end
