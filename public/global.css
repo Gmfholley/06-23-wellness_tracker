@@ -1,4 +1,112 @@
+* {
+   margin: 0px;
+   padding: 0px;
+   font-family: Tahoma, Geneva, sans-serif;
+   
+}
+
+body {
+  margin: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-align: center;
+  height: 80%;
+  background: #FFFFFF;
+  line-height: 2.5;
+}
+
+header {
+  background: #0D9CD4;
+  color: white;
+/*  padding-bottom: 25px;*/
+}
+header h1 {
+  color: white;
+}
+
+header h3 {
+  line-height: 4;
+}
+
 h1 {
-  color: red;
-  
+  color: #0D9CD4;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 24px;
+}
+
+ul {
+  line-height: 2.5;
+}
+
+nav ul {
+  list-style-type: none;
+  background: #0FF677;
+  text-align: center;
+  text-transform: capitalize;
+  border: 2px white solid;
+}
+
+nav li {
+  border: 2px white solid;
+}
+
+nav ul a {
+  color: white;
+}
+
+ul {
+    list-style-type: none;
+}
+
+#primary {
+  padding: 20px;
+  line-height: 2;
+}
+
+#primary a {
+  color: #0DD49F;
+}
+
+#primary a:visited {
+  color: #0F78F6;
+}
+
+form {
+  text-align: left;
+  padding: 10px;
+  line-height: 2.5;
+}
+#primary table {
+  align: left;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+#primary th {
+  color: #0D9CD4;
+  text-align: center;
+  border: 1px #0D9CD4 solid;
+  padding: 10px;
+}
+
+/*alternate rows of the table*/
+#primary .alt {
+  background: #BEEBEB;
+}
+
+#primary td {
+  border: 1px #0D9CD4 solid;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+footer {
+  background: #0FF677;
+  line-height: 2;
+  color: white;
+  margin-top: 100px;
+}
+
+footer a {
+  color: white;
 }

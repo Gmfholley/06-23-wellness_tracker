@@ -19,6 +19,7 @@ Objects must have the DatabaseConnector module included and must have Foreign Ke
 <div id="primary">
   
   <h3>Enter the variables of the <%= @class_name %>.</h3>
+  <br>
   <!--Show error messages -->
   <div id="message"><%= get_list_html_for_errors(@m) %></div>
 
@@ -30,9 +31,8 @@ Objects must have the DatabaseConnector module included and must have Foreign Ke
 
     <!--Show all foreign keys in a select field -->
     <%= get_list_html_for_foreign_key_fields(@m) %>
-
-
-    <input type = "submit" value = "Submit <%= params["class_name"].humanize.downcase %>">
+    <br>
+    <input type = "submit" value = "Submit <%= params["class_name"].humanize.downcase %>" class ="submit_button">
 
   </form>
 </div>
