@@ -84,6 +84,7 @@ get "/:class_name/:action" do
       table_menu_local_variables("show", false)
       erb :menu
     else
+      date_array_for_this_class(@class_name)
       erb :create
     end
   else
