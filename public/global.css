@@ -3,6 +3,15 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
+@media (min-width: 500px) {
+  nav li {
+    width: 50%;
+  }
+  
+  .left {
+    float: left;
+  }
+}
 
 body {
   margin: 0;
@@ -40,11 +49,7 @@ nav ul {
 }
 
 nav li {
-  width: 50%;
-}
-
-.left {
-  float: left;
+  border: white 1px solid;
 }
 
 #primary {
