@@ -1,3 +1,8 @@
+* {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 
 body {
   margin: 0;
@@ -9,64 +14,42 @@ body {
   line-height: 2.5;
 }
 
-header {
-  background: #0D9CD4;
-  color: white;
-/*  padding-bottom: 25px;*/
-}
 header h1 {
-  color: white;
-  margin-top: 0;
+  margin: 0px;
+  padding-bottom: 20px;
 }
 
 header h3 {
-  line-height: 4;
-}
-
-h1 {
-  color: #0D9CD4;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 24px;
-  line-height: 1;
-  padding: 20px;
+  line-height: 3;
 }
 
 ul {
-  line-height: 2.5;
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+li {
+  padding: 5% 0px;
+  line-height: 1em;
+  margin: 0px;
 }
 
 nav ul {
-  list-style-type: none;
-  background: #0FF677;
   text-align: center;
-  text-transform: capitalize;
-  border: 2px white solid;
-  padding: 0;
 }
 
 nav li {
-  border: 2px white solid;
+  width: 50%;
 }
 
-nav ul a {
-  color: white;
-}
-
-ul {
-    list-style-type: none;
+.left {
+  float: left;
 }
 
 #primary {
   padding: 20px;
-  line-height: 2;
-}
-
-#primary a {
-  color: #0DD49F;
-}
-
-#primary a:visited {
-  color: #0F78F6;
+  line-height: 1;
 }
 
 form {
@@ -83,31 +66,67 @@ form {
   margin-right: auto;
 }
 
-#primary th {
-  color: #0D9CD4;
-  text-align: center;
-  border: 1px #0D9CD4 solid;
-  padding: 10px;
-}
-
-/*alternate rows of the table*/
-#primary .alt {
-  background: #BEEBEB;
-}
-
-#primary td {
-  border: 1px #0D9CD4 solid;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
 footer {
-  background: #0FF677;
   line-height: 2;
-  color: white;
   margin-top: 100px;
 }
 
-footer a {
+.padding-all {
+  padding: 10px;
+}
+
+.padding-left-right {
+  padding-left: 10px;
+  padding-right: 10px; 
+}
+
+
+.no-underline {
+  text-decoration: none;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.hover-underline:hover {
+  text-decoration: underline;
+}
+
+.white {
   color: white;
+}
+
+.first-color {
+  color: #0D9CD4; /*blue*/
+}
+
+.first-color-border {
+  border: 1px #0D9CD4 solid;
+}
+
+.first-color-background {
+  background: #0D9CD4; /*blue*/
+}
+
+/*color for alternate rows of the table*/
+/*make this complimentary to the first-color*/
+.alt-background {
+  background: #BEEBEB; /*light blue */
+}
+
+.second-color {
+  color: #0FF677;
+}
+
+.second-color-background {
+  background: #0FF677;
+}
+
+.second-color-visited:visited {
+  color: #0FF677;
+}
+
+.capitalize {
+  text-transform: capitalize;
 }

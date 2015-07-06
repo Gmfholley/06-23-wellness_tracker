@@ -17,7 +17,7 @@ module MenuController
     html = ["<ul>"]  
     menu.menu_items.each do |item|
       html << "<li>"
-      html <<   "<a href = /#{item.method.method_name}>" if with_links
+      html <<   "<a class='second-color-visited first-color underline' href = /#{item.method.method_name}>" if with_links
       html <<       html_user_message_list(item)
       html <<   "</a>" if with_links      
       html << "</li>"
@@ -37,7 +37,7 @@ module MenuController
     html << table_header
     menu.menu_items.each_with_index do |item, x|
       if x % 2 == 0 
-        html << "<tr class = 'alt'>"
+        html << "<tr class='alt-background'>"
       else
         html << "<tr>"
       end
@@ -58,7 +58,7 @@ module MenuController
     m = @class_name.new
     m.display_fields.each do |field|
       header << 
-      "<th>
+      "<th class='first-color center first-color-border padding-all'>
         #{field.humanize}
       </th>"
     end
@@ -75,8 +75,8 @@ module MenuController
   def html_table_row(item, with_links)
     html = []
     item.user_message.each do |message|
-      html << "<td>"
-      html <<   "<a href = /#{item.method.method_name}>" if with_links
+      html << "<td class='first-color-border padding-left-right'>"
+      html <<   "<a class='second-color-visited first-color underline' href = /#{item.method.method_name}>" if with_links
       html <<      "#{message}"
       html <<   "</a>" if with_links
       html << "</td>"
