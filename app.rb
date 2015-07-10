@@ -40,6 +40,7 @@ require_relative 'controllers/local_variable_methods.rb'
 helpers DefinedMenus, MenuController, CreateController, ERBVariableMethods
 
 get "/home" do
+  home_menu_nav_variables
   home_menu_local_variables
   erb :menu
 end
@@ -47,6 +48,7 @@ end
 ###############################
 # Show the menu for this class
 get "/:class_name" do
+  home_menu_nav_variables
   class_variable(params["class_name"])
   if @class_name.nil?
     erb :not_appearing
@@ -61,6 +63,7 @@ end
 
 get "/:class_name/:action" do
   
+  home_menu_nav_variables
   class_variable(params["class_name"])
   case params["action"]
   when "update", "delete"
@@ -96,6 +99,7 @@ end
 # Do something to this object in the class
 
 get "/:class_name/:action/:x" do
+  home_menu_nav_variables
   @class_name = menu_to_class_name[params["class_name"]]
   
   case params["action"]

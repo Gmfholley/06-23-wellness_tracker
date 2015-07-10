@@ -45,6 +45,14 @@ module ERBVariableMethods
     @with_links = true
     @html_type = "get_list_html_for_all_menu_items"
   end
+  
+  
+  # gets the menu needed for the navigation panel
+  #
+  # returns the nav_menu variable set to the home menu items as a Menu
+  def home_menu_nav_variables
+    @nav_menu = home_menu
+  end
 
   # sets the variables needed to make a CRUD menu for a class
   # ie...
