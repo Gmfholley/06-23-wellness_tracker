@@ -3,14 +3,13 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@media (min-width: 500px) {
-  nav li {
-    width: 50%;
-  }
-  
-  .left {
-    float: left;
-  }
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 body {
@@ -23,14 +22,36 @@ body {
   line-height: 2.5;
 }
 
-header h1 {
+.large {
   margin: 0px;
   padding-bottom: 20px;
+  font-size: 120%;
 }
 
-header h3 {
-  line-height: 3;
+#pop-up-menu {
+  position: absolute;
+  width: 200px;
+  top: 0px;
+  right: 25px;
 }
+
+.pop-up-menu-hidden {
+  height: 0px;
+  overflow: hidden;
+  -webkit-transition: height 1s; /* Safari */
+  transition: height 1s;
+}
+
+.pop-up-menu-shown {
+  height: 220px;
+  overflow: hidden;
+  -webkit-transition: height 1s; /* Safari */
+  transition: height 1s;
+}
+
+
+
+/*remove default ul and li behavior */
 
 ul {
   list-style-type: none;
@@ -39,9 +60,11 @@ ul {
 }
 
 li {
-  padding: 5% 0px;
+  padding: 5px 0px;
   line-height: 1em;
   margin: 0px;
+  vertical-align: center;
+  height: 45px;
 }
 
 nav ul {
@@ -72,8 +95,14 @@ form {
 }
 
 footer {
-  line-height: 2;
-  margin-top: 100px;
+  margin-top: 100px;  
+}
+
+#menu-icon {
+  height: 24px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
 }
 
 .padding-all {
@@ -84,7 +113,6 @@ footer {
   padding-left: 10px;
   padding-right: 10px; 
 }
-
 
 .no-underline {
   text-decoration: none;
@@ -134,4 +162,25 @@ footer {
 
 .capitalize {
   text-transform: capitalize;
+}
+
+@media (min-width: 800px) {
+  #pop-up-menu {
+    height: auto;
+    width: 100%;
+    position: static;
+  }
+  
+  #menu-icon {
+    display: none;
+  }
+  
+  .pop-up-menu li {
+    width: 20%;
+    border-bottom: none;
+  }
+  
+  .left {
+    float: left;
+  }
 }
