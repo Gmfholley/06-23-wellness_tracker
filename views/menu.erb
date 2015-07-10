@@ -1,16 +1,6 @@
 <!-- Dynamically creates menu from @menu object >
 <! Menu items are their own links >
 <! Menu items have a parameter called method that contains the method_name that should be called next.  This is what is used as the urls. -->
-<header>
-  <h1 class="white first-color-background">Wellness Tracker</h1>
-  <nav class="second-color-background white">
-    <ul>
-      <li class="left"><a class="no-underline hover-underline border-right white capitalize" href = "/home">home </a></li>
-      <li class="left"><a class="no-underline hover-underline white capitalize" href = "../../<%= params["class_name"] %>"><%=params["class_name"]%></a></li>
-      <div style="clear: both"></div>
-    </ul>
-  </nav>
-</header>
 
 <div id = "primary">
   <div class="message"><p><%= @message %></p></div>
